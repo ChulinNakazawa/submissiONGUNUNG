@@ -44,4 +44,34 @@ XMonad:
 
 X resources:
 
-- XT
+- XTerm
+- URxvt
+- XScreenSaver
+- ...
+
+Systemd services:
+
+- [kmscon](https://github.com/dvdhrm/kmscon)
+
+Others:
+
+- Mutt
+- GDB
+- Tmux
+- Mailcap
+- Pentadactyl (for Firefox)
+- Udev
+- Xorg
+- ...
+
+Have a look at my [Linux desktop config (in Chinese)](http://maskray.me/portfolio/linux-desktop) for my choice of desktop applications.
+
+## Acknowledgements
+
+- [@pyx](https://github.com/pyx) (Philip Xu)
+  My config absorbs quite a few ideas from his well-organized config.
+  He is also my abecedarian leading me to discover the mysterious FOSS world.
+  Thank you, Philip!
+- [@adam8157](https://github.com/adam8157) (Adam Lee)
+- [@roylez](https://github.com/roylez/dotfiles) (Roy Zuo)
+- [@laurentb](https://gith
