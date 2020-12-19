@@ -24,4 +24,24 @@ Gentoo Portage:
 
 Zsh:
 
-- use fasd to navigate the 
+- use fasd to navigate the filesystem hierarchy
+- numerous aliases
+- decent autocomplete settings
+
+Vim:
+
+- Haskell, Ruby, Node.js, Python, C++ and Web development settings
+- lots of key bindings
+- Many goodies including [Global](www.gnu.org/software/global), Ack, EasyMotion, CtrlP, Syntastic, UltiSnips, Tabular
+
+XMonad:
+
+- organize applications on topic basic
+- a great many bindings (perhaps over one hundred) for window arrangement, x11 utilities and so on
+- scratchpads for ghci, ocaml, coffee, erl (Erlang), node (Node.js), R, pry (Ruby), ipython, lua, gst (GNU Smalltalk), task (taskwarrior), alsa-mixer, etc
+- direction-based navigation via XMonad.Actions.Navigation2D
+- website launcher for wikipedia, google, duckduckgo, github, developer.mozilla.org, etc
+
+X resources:
+
+- XT
