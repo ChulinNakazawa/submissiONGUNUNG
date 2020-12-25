@@ -74,4 +74,5 @@ Have a look at my [Linux desktop config (in Chinese)](http://maskray.me/portfoli
   Thank you, Philip!
 - [@adam8157](https://github.com/adam8157) (Adam Lee)
 - [@roylez](https://github.com/roylez/dotfiles) (Roy Zuo)
-- [@laurentb](https://gith
+- [@laurentb](https://github.com/laurentb/public-dotfiles) (Laurent Bachelier)
+- [@terlar](https://github.com/terlar/dotfiles) (Terje Larsen)
