@@ -47,4 +47,14 @@ with gzip.open('/usr/share/i18n/charmaps/UTF-8.gz', 'wb') as f:
                     if i == j-1:
                         f.write('{}\t{}\n'.format(encode(i), width[i]).encode())
                     else:
-                        f.write('{}...{}\t{}\n'.format(encode(i), encode(j-1), 
+                        f.write('{}...{}\t{}\n'.format(encode(i), encode(j-1), width[i]).encode())
+                    i = j
+                else:
+                    i += 1
+        elif line == 'END WIDTH':
+            is_width = False
+            f.write((line+'\n').encode())
+        elif not is_width:
+            f.write((line+'\n').encode())
+
+subprocess.run('localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8', shell=True)
