@@ -1,0 +1,16 @@
+# for X.A.Navigation2D
+=x11-wm/xmonad-9999 **
+=x11-wm/xmonad-contrib-9999 **
+
+=app-text/llpp-9999 **
+=app-text/mupdf-9999 **
+=www-client/weboob-9999 **
+=x11-misc/compton-9999 **
+
+=app-i18n/librime-9999 **
+=app-i18n/fcitx-9999 **
+=app-i18n/fcitx-rime-9999 **
+=app-i18n/rime-data-9999 **
+
+=app-shells/zsh-completion-99999999 **
+=app-emulation/qem
