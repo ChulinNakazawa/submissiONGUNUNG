@@ -9,4 +9,26 @@ app-emulation/spice client
 # Application - Graphics
 media-gfx/imagemagick webp graphviz
 media-libs/freetype kpathsea infinality
-media-gfx/blender blender-game py
+media-gfx/blender blender-game python_single_target_python3_3
+media-gfx/gimp webkit python curl
+media-sound/cmus cue wma ffmpeg -aac # aac plugin is broken
+
+# Application - GUI misc.
+app-misc/recoll inotify -fam tex
+media-gfx/graphviz gts # otherwise sfdp won't work
+net-misc/tigervnc gnutls
+app-emulation/qemu spice ssh static-user tci vde
+
+# Application - Instant messaging
+net-im/bitlbee twitter
+net-irc/weechat perl python ruby # plugins
+
+# Application - Mail
+mail-client/mutt gpg sidebar imap
+mail-mta/msmtp sasl gnutls
+
+# Application - Media
+>=media-libs/libsamplerate-0.1.8 sndfile # required by rosegarden
+media-libs/mesa gbm gles2 vdpau xorg
+media-sound/ncmpcpp curl outputs fftw taglib visualizer clock
+media-video/f
