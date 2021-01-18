@@ -1,0 +1,5 @@
+dev-libs/DirectFB fbcon
+dev-libs/lzo static-libs # sys-power/suspend
+sys-apps/grep pcre
+sys-fs/udev extras -acl gudev
+sy
