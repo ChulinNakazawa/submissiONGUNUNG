@@ -30,4 +30,31 @@ dev-libs/boehm-gc threads
 dev-ml/lablgl glut
 
 app-doc/doxygen latex dot
-sys-cluster/openmpi threads mpi-thre
+sys-cluster/openmpi threads mpi-threads -fortran
+sci-electronics/gwave gnuplot
+
+# haskell
+dev-lang/ghc binary llvm
+app-emacs/ghc-mod emacs
+
+# Development - Python specific
+net-analyzer/scapy gnuplot graphviz imagemagick
+dev-lang/python tk
+dev-python/imaging tk
+dev-python/ipython matplotlib notebook
+sci-libs/scipy sparse
+
+# Development - Editors
+app-editors/emacs gzip-el
+app-editors/gvim cscope ruby python
+app-editors/vim cscope ruby python
+app-emacs/org-mode contrib
+
+# Development- Tools
+dev-util/valgrind mpi
+sci-mathematics/maxima latex ecl
+sci-mathematics/sage mpc
+sci-visualization/gnuplot wxwidgets
+sys-devel/gdb expat python # Python pretty printers, STL containers specifically
+
+#required by media-gfx/blender-2.64a
