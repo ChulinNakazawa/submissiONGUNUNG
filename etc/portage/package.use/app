@@ -1,0 +1,12 @@
+# Application - Documentation and tools
+app-text/texlive cjk png extra graphics publishers xetex linguas_zh
+app-text/texlive-core cjk xetex
+app-text/zathura sqlite
+app-text/zathura-meta pdf postscript
+
+app-emulation/spice client
+
+# Application - Graphics
+media-gfx/imagemagick webp graphviz
+media-libs/freetype kpathsea infinality
+media-gfx/blender blender-game py
