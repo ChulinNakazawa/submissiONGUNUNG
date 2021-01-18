@@ -48,4 +48,18 @@ x11-base/xorg-server xnest xvfb
 x11-terms/rxvt-unicode 256-color wcwidth fading-colors blink pixbuf -vanilla
 x11-libs/libdrm libkms
 x11-wm/enlightenment enlightenment_modules_shot
-#required by x11-wm/enlightenment-0.17.1[enlightenment_modules_shot], required by @app, requ
+#required by x11-wm/enlightenment-0.17.1[enlightenment_modules_shot], required by @app, required by @selected, required by @world (argument)
+>=dev-libs/ecore-1.7.5 curl
+x11-wm/xmonad icccm
+
+# required by app-emulation/qemu-user-1.4.0
+# required by qemu-user (argument)
+>=dev-libs/glib-2.36.4 static-libs
+# required by app-emulation/qemu-user-1.4.0
+# required by qemu-user (argument)
+>=sys-libs/zlib-1.2.8-r1 static-libs
+
+net-fs/samba addns ads winbind
+net-fs/cifs-utils ads upcall
+
+sys-apps/file python

@@ -1,0 +1,8 @@
+# Development - Programming languages and environments
+sys-devel/gcc fortran mudflap graphite
+dev-lang/erlang emacs hipe
+dev-lang/python sqlite
+dev-lang/swi-prolog gmp
+dev-scheme/racket backtrace future jit places plot threads
+sys-devel/llvm clang ocaml
+de
