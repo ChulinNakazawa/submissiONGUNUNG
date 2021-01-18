@@ -31,4 +31,21 @@ mail-mta/msmtp sasl gnutls
 >=media-libs/libsamplerate-0.1.8 sndfile # required by rosegarden
 media-libs/mesa gbm gles2 vdpau xorg
 media-sound/ncmpcpp curl outputs fftw taglib visualizer clock
-media-video/f
+media-video/ffmpeg vdpau threads v4l v4l2
+media-video/mplayer ass vdpau v4l v4l2 mp3 alsa fbcon live theora vorbis x264 xvid directfb a52 aac real xvmc
+virtual/ffmpeg threads vdpau
+
+# Application - Misc.
+app-arch/p7zip rar
+app-arch/unzip natspec
+app-emulation/wine win32 win64 alsa dos
+dev-java/icedtea-bin nsplugin # Java plugin for Firefox
+dev-libs/nss utils
+x11-misc/xbindkeys guile # emacs-ish key sequence
+
+# X11, WM, DE
+x11-base/xorg-server xnest xvfb
+x11-terms/rxvt-unicode 256-color wcwidth fading-colors blink pixbuf -vanilla
+x11-libs/libdrm libkms
+x11-wm/enlightenment enlightenment_modules_shot
+#required by x11-wm/enlightenment-0.17.1[enlightenment_modules_shot], required by @app, requ
