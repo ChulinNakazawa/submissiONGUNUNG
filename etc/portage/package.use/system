@@ -2,4 +2,25 @@ dev-libs/DirectFB fbcon
 dev-libs/lzo static-libs # sys-power/suspend
 sys-apps/grep pcre
 sys-fs/udev extras -acl gudev
-sy
+sys-libs/glibc systemtap debug
+sys-libs/zlib minizip # required by R, vlc, ...
+
+#required by media-video/cheese-3.6.2, required by cheese (argument)
+>=media-libs/gst-plugins-base-1.0.5-r2 theora
+# required by www-client/weboob-9999[X]
+# required by =weboob-9999 (argument)
+>=dev-python/PyQt4-4.10.2 phonon
+
+# required by sys-libs/tevent-0.9.19
+# required by tevent (argument)
+>=sys-libs/talloc-2.0.8-r1 python
+
+# required by net-fs/samba-4.1.0_rc2
+# required by @network
+# required by @selected
+# required by @world (argument)
+>=app-crypt/heimdal-1.5.3-r1 -ssl
+# required by net-wireless/aircrack-ng-1.2_beta1[airdrop-ng]
+# required by @network
+# required by @selected
+# requi
