@@ -23,4 +23,20 @@ sys-libs/zlib minizip # required by R, vlc, ...
 # required by net-wireless/aircrack-ng-1.2_beta1[airdrop-ng]
 # required by @network
 # required by @selected
-# requi
+# required by @world (argument)
+=net-wireless/lorcon-0.0_p20130212 python
+# required by net-fs/samba-4.1.0_rc2[addns]
+# required by @network
+# required by @selected
+# required by @world (argument)
+>=net-dns/bind-tools-9.9.3_p2 gssapi
+# required by sys-libs/ldb-1.1.16
+# required by net-fs/samba-4.1.0_rc2
+# required by @network
+# required by @selected
+# required by @world (argument)
+>=sys-libs/tdb-1.2.12-r1 python
+
+#required by sys-devel/prelink-20130503, required by app-emulation/wine-1.7.0[prelink], required by @__auto_slot_operator_replace_installed__ (argument)
+>=dev-libs/elfutils-0.156 static-libs
+#required by app-emulation/libguestfs-1.22.6, required by @app, required by @selected, r
