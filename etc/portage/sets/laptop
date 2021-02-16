@@ -1,0 +1,4 @@
+app-emulation/qemu-kvm
+net-wireless/wpa_supplicant
+sys-power/acpi
+sys-power/cpufrequtils

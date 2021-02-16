@@ -2,3 +2,168 @@
 # Assembly
 dev-lang/nasm
 dev-libs/udis86
+dev-util/radare2
+
+# Development - Programming languages and environments
+dev-java/oracle-jdk-bin
+dev-lang/R
+dev-lang/fpc
+dev-lang/ghc
+dev-lang/gnu-smalltalk
+dev-lang/ocaml
+dev-lang/icon
+dev-lang/j
+dev-lang/swi-prolog
+dev-lang/vala
+dev-lang/php
+dev-lang/mercury
+dev-libs/gdl
+dev-lisp/sbcl
+#dev-python/pypy-bin
+dev-scheme/guile
+dev-scheme/racket
+sys-devel/clang
+dev-lang/erlang
+net-libs/nodejs
+#dev-util/android-ndk
+#dev-util/android-sdk-update-manager
+dev-util/scanmem
+sys-devel/gcc:4.7
+sys-devel/gcc:4.8
+#cross-arm-unknown-linux-gnueabi/gcc
+#cross-arm-unknown-linux-gnueabi/gdb
+
+# Development - Editors
+sys-apps/ed
+app-editors/emacs
+app-editors/gvim
+app-editors/vim
+dev-util/glade
+#dev-qt/qt-creator
+app-emacs/auctex
+
+# Development - VCS
+dev-vcs/bzr
+dev-vcs/darcs
+dev-vcs/git
+dev-vcs/git-annex
+dev-vcs/mercurial
+dev-vcs/mr
+dev-vcs/tig
+
+# Development - Tools
+app-doc/doxygen
+dev-util/cloc
+dev-util/complexity
+dev-util/cscope
+dev-util/flawfinder
+dev-util/gengetopt
+dev-util/global
+dev-util/perf
+dev-util/strace
+dev-util/ltrace
+dev-util/systemtap
+dev-util/valgrind
+sys-devel/crossdev
+sys-devel/gdb
+dev-util/cgdb
+sys-process/parallel
+dev-db/sqliteman
+www-servers/varnish
+dev-util/indent
+sys-fs/entr
+dev-util/cwdiff
+dev-util/dialog
+net-libs/webkit-gtk
+
+# Development - C/C++ specific
+dev-util/cppi
+
+# Development - Haskell specific
+app-emacs/haskell-mode
+dev-haskell/cabal-install
+dev-haskell/pointfree
+
+# Development - OCaml specific
+dev-ml/findlib
+
+# Development - Perl specific
+dev-perl/Devel-REPL
+dev-perl/Term-ReadLine-Gnu
+dev-perl/Data-Dump
+
+# Development - PHP specific
+dev-php/xdebug
+
+# Development - Python specific
+#dev-python/argparse
+dev-python/autopep8
+dev-python/ipdb
+dev-python/fabric
+dev-python/ipython
+#dev-python/greenlet
+dev-python/pillow
+dev-python/pip
+dev-python/pytest
+dev-python/rope
+dev-python/virtualenv
+net-analyzer/scapy
+www-servers/tornado
+www-servers/gunicorn
+dev-python/twisted-core # for twistd
+dev-python/jedi
+
+# Development - Ruby specific
+#dev-ruby/rails
+dev-ruby/nokogiri
+#www-servers/thin
+
+# Electronics
+#sci-electronics/geda
+#sci-electronics/gtkwave
+#sci-electronics/iverilog
+#sci-electronics/ngspice
+
+# Math
+sci-libs/scipy
+sci-libs/scikits
+sci-libs/libsvm
+sci-mathematics/glpk
+
+# Vim specific
+app-vim/colorschemes
+app-vim/extra-syntax
+app-vim/fuzzyfinder
+app-vim/gentoo-syntax
+app-vim/nerdtree
+app-vim/supertab
+app-vim/surround
+app-vim/tagbar
+app-vim/vim-latex
+app-vim/vimpython
+
+# Services
+app-admin/apache-tools
+dev-db/couchdb
+dev-db/mongodb
+dev-db/postgresql-server
+dev-db/redis
+dev-db/sqlite
+net-ftp/proftpd
+www-misc/fcgiwrap
+www-servers/nginx
+
+dev-db/pgadmin3
+
+# Misc
+app-misc/jq
+app-text/xmlstarlet
+dev-db/mysql
+dev-java/ant-core
+dev-java/antlr
+dev-java/junit
+dev-java/log4j
+dev-util/patchutils
+dev-util/howdoi
+media-gfx/optipng
+media-libs/opencv
