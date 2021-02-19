@@ -1,0 +1,4 @@
+# See https://pypi.python.org/pypi/ConfigArgParse for syntax
+
+# HTTP/WebSocket related options
+# Use HTTPS to server injector.js and injector.user.js if at least one of http-cert or 
