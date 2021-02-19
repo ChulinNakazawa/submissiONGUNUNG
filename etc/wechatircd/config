@@ -23,4 +23,17 @@ ignore-topic: @@SECRET
 irc-listen: [127.0.0.1, ::1]
 # reserved nicks for clients
 irc-nicks: [ray]
-# IRC connection pa
+# IRC connection password
+#irc-password:
+irc-port: 6667
+
+# join mode
+join: new
+
+# logger
+#logger-ignore:
+logger-mask: /home/ray/irclogs/wechatircd/$channel/%Y-%m-%d.log
+#logger-time-format: %H:%M
+
+# SASL PLAIN password (as an alternative to --irc-password)
+#sasl-password:
