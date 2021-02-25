@@ -1,0 +1,26 @@
+set arrowstyle = highlight
+set hlsearch
+set ignorecase
+#set showdebugcommands
+set tabstop=8
+set winsplit=src_big
+imap ; <ESC>
+map <CR> i
+#set cgdbmodekey=;
+
+# SPC : toggle breakpoint
+# a : list args
+map a iinfo<Space>args<CR><ESC>
+# bt : backtrace
+# map bt ibt<CR><ESC>
+map b ib
+map c :continue<CR>
+map d :down<CR>
+map e :set<Space>dis<CR>
+map E :set<Space>nodis<CR>
+# f : finish
+map f :finish<CR>
+# n : next
+map n :next<CR>
+map N ireverse-next<CR>
+# o : op
