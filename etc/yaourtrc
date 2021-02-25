@@ -45,4 +45,22 @@ DEVELSRCDIR="/var/abs/local/yaourtbuild"
 #UP_NOCONFIRM=0     # No prompt while build upgrades (including -Sbu)
 #BUILD_NOCONFIRM=0  # Only prompt for editing files
 #PU_NOCONFIRM=0     # Add --noconfirm to $PACMAN -U
-#E
+#EDITFILES=1
+#NOENTER=1
+
+# Output
+#USECOLOR=1
+#USEPAGER=0
+#DETAILUPGRADE=1
+#SHOWORPHANS=1
+#TERMINALTITLE=1
+
+# Command
+#PACMAN="pacman"
+#MAKEPKG="makepkg"
+#DIFFEDITCMD="vimdiff"
+
+# pacdiffviewer
+#P_LOCATE=0         # Use locate instead of find
+#P_SEARCHDIR=(/etc/ /boot/)
+#P_SAVEDIR='/var/lib/yaourt/backupfiles'
