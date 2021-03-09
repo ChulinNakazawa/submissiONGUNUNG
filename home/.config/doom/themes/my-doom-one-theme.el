@@ -102,4 +102,25 @@ determine the exact padding."
     (if -modeline-bright
         (doom-darken blue 0.45)
       `(,(doom-darken (car bg-alt) 0.1) ,@(cdr base0))))
-   (modeline-bg-inactive   `(,(doom-darken (car bg-alt) 0.1
+   (modeline-bg-inactive   `(,(doom-darken (car bg-alt) 0.1) ,@(cdr bg-alt)))
+   (modeline-bg-inactive-l `(,(car bg-alt) ,@(cdr base1))))
+
+
+  ;; --- extra faces ------------------------
+  ((elscreen-tab-other-screen-face :background "#353a42" :foreground "#1e2022")
+
+   (evil-goggles-default-face :inherit 'region :background (doom-blend region bg 0.5))
+
+   ((line-number &override) :foreground base4)
+   ((line-number-current-line &override) :foreground fg)
+
+   (font-lock-comment-face
+    :foreground comments
+    :background (if my-doom-one-comment-bg (doom-lighten bg 0.05)))
+   (font-lock-doc-face
+    :inherit 'font-lock-comment-face
+    :foreground doc-comments)
+
+   (mode-line
+    :background modeline-bg :foreground modeline-fg
+  
