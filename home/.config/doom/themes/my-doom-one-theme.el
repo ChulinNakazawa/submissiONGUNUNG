@@ -61,4 +61,23 @@ determine the exact padding."
    (dark-cyan  '("#5699AF" "#5699AF" "cyan"         ))
 
    ;; face categories -- required for all themes
-   (highlight    
+   (highlight      blue)
+   (vertical-bar   (doom-darken base1 0.1))
+   (selection      dark-blue)
+   (builtin        magenta)
+   (comments       (if my-doom-one-brighter-comments dark-cyan base5))
+   (doc-comments   (doom-lighten (if my-doom-one-brighter-comments dark-cyan base5) 0.25))
+   (constants      violet)
+   (functions      magenta)
+   (keywords       blue)
+   (methods        cyan)
+   (operators      blue)
+   (type           yellow)
+   (strings        green)
+   (variables      (doom-lighten magenta 0.4))
+   (numbers        orange)
+   (region         `(,(doom-lighten (car bg-alt) 0.15) ,@(doom-lighten (cdr base1) 0.35)))
+   (error          red)
+   (warning        yellow)
+   (success        green)
+   (vc-mo
