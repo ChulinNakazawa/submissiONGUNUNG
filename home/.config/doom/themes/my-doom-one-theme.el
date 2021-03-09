@@ -80,4 +80,26 @@ determine the exact padding."
    (error          red)
    (warning        yellow)
    (success        green)
-   (vc-mo
+   (vc-modified    orange)
+   (vc-added       green)
+   (vc-deleted     red)
+
+   ;; custom categories
+   (hidden     `(,(car bg) "black" "black"))
+   (-modeline-bright my-doom-one-brighter-modeline)
+   (-modeline-pad
+    (when my-doom-one-padded-modeline
+      (if (integerp my-doom-one-padded-modeline) my-doom-one-padded-modeline 4)))
+
+   (modeline-fg     fg)
+   (modeline-fg-alt base5)
+
+   (modeline-bg
+    (if -modeline-bright
+        (doom-darken blue 0.475)
+      `(,(doom-darken (car bg-alt) 0.15) ,@(cdr base0))))
+   (modeline-bg-l
+    (if -modeline-bright
+        (doom-darken blue 0.45)
+      `(,(doom-darken (car bg-alt) 0.1) ,@(cdr base0))))
+   (modeline-bg-inactive   `(,(doom-darken (car bg-alt) 0.1
