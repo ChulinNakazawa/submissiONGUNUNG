@@ -45,4 +45,20 @@ determine the exact padding."
    (base7      '("#9ca0a4" "#979797" "brightblack"  ))
    (base8      '("#DFDFDF" "#dfdfdf" "white"        ))
    (fg         '("#bbc2cf" "#bfbfbf" "brightwhite"  ))
-   (fg-alt     '("#5B6268" "#2d2d2d" "white"        )
+   (fg-alt     '("#5B6268" "#2d2d2d" "white"        ))
+
+   (grey       base4)
+   (red        '("#ff6c6b" "#ff6655" "red"          ))
+   (orange     '("#da8548" "#dd8844" "brightred"    ))
+   (green      '("#98be65" "#99bb66" "green"        ))
+   (teal       '("#4db5bd" "#44b9b1" "brightgreen"  ))
+   (yellow     '("#ECBE7B" "#ECBE7B" "yellow"       ))
+   (blue       '("#51afef" "#51afef" "brightblue"   ))
+   (dark-blue  '("#2257A0" "#2257A0" "blue"         ))
+   (magenta    '("#c678dd" "#c678dd" "brightmagenta"))
+   (violet     '("#a9a1e1" "#a9a1e1" "magenta"      ))
+   (cyan       '("#46D9FF" "#46D9FF" "brightcyan"   ))
+   (dark-cyan  '("#5699AF" "#5699AF" "cyan"         ))
+
+   ;; face categories -- required for all themes
+   (highlight    
