@@ -29,4 +29,26 @@
     indicate_hidden = yes
 
     # alignment of message text.
-    # Possi
+    # Possible values are "left", "center" and "right"
+    alignment = left
+
+    # The frequency with wich text that is longer than the notification
+    # window allows bounces back and forth.
+    # This option conflicts with 'word_wrap'.
+    # Set to 0 to disable
+    bounce_freq = 0
+
+    # show age of message if message is older than show_age_threshold seconds.
+    # set to -1 to disable
+    show_age_threshold = 60
+
+    # split notifications into multiple lines if they don't fit into geometry
+    word_wrap = yes
+
+    # ignore newlines '\n' in notifications
+    ignore_newline = no
+
+
+    # the geometry of the window
+    # geometry [{width}]x{height}][+/-{x}+/-{y}]
+    # The geometry of the message
