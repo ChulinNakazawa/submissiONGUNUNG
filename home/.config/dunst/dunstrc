@@ -1,0 +1,10 @@
+[global]
+    font = Monospace 12
+
+    # allow a small subset of html markup:
+    # <b>bold</b>
+    # <i>italic</i>
+    # <s>strikethrough<s/>
+    # <u>underline</u>
+    #
+    # for a complete reference see http://developer.gnome.org/pango

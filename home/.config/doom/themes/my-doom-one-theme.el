@@ -154,4 +154,21 @@ determine the exact padding."
    (css-property             :foreground green)
    (css-selector             :foreground blue)
 
-  
+   ;; LaTeX-mode
+   (font-latex-math-face :foreground green)
+
+   ;; markdown-mode
+   (markdown-markup-face :foreground base5)
+   (markdown-header-face :inherit 'bold :foreground red)
+   ((markdown-code-face &override) :background (doom-lighten base3 0.05))
+
+   ;; org-mode
+   (org-hide :foreground hidden)
+   (solaire-org-hide-face :foreground hidden))
+
+
+  ;; --- extra variables ---------------------
+  ()
+  )
+
+;;; my-doom-one-theme.el ends here
