@@ -83,4 +83,23 @@
     # none: don't follow anything
     #
     # "keyboard" needs a windowmanager that exports the _NET_ACTIVE_WINDOW property.
-    # T
+    # This should be the case for almost all modern windowmanagers.
+    #
+    # If this option is set to mouse or keyboard, the monitor option will be
+    # ignored.
+    follow = keyboard
+
+    # should a notification popped up from history be sticky or
+    # timeout as if it would normally do.
+    sticky_history = yes
+
+    # The height of a single line. If the height is smaller than the font height,
+    # it will get raised to the font height.
+    # This adds empty space above and under the text.
+    line_height = 0
+
+    # Draw a line of 'separatpr_height' pixel height between two notifications.
+    # Set to 0 to disable
+    separator_height = 2
+
+    # pa
