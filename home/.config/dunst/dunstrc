@@ -62,4 +62,25 @@
     # screen width minus the width defined in within the geometry option.
     geometry = "700x5-30+20"
 
-    # Shrink window if it's smaller than the width. Will be ignored if widt
+    # Shrink window if it's smaller than the width. Will be ignored if width is 0.
+    shrink = no
+
+    # The transparency of the window. range: [0; 100]
+    # This option will only work if a compositing windowmanager is present (e.g. xcompmgr, compiz, etc..)
+    transparency = 20
+
+    # Don't remove messages, if the user is idle (no mouse or keyboard input)
+    # for longer than idle_threshold seconds.
+    # Set to 0 to disable.
+    idle_threshold = 120
+
+    # Which monitor should the notifications be displayed on.
+    monitor = 0
+
+    # Display notification on focused monitor. Possible modes are:
+    # mouse: follow mouse pointer
+    # keyboard: follow window with keyboard focus
+    # none: don't follow anything
+    #
+    # "keyboard" needs a windowmanager that exports the _NET_ACTIVE_WINDOW property.
+    # T
