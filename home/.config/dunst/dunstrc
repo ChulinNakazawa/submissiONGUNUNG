@@ -124,4 +124,31 @@
     # dmenu path
     dmenu = /usr/bin/dmenu -p dunst:
 
-    # browser for opening urls in contex
+    # browser for opening urls in context menu
+    browser = /usr/bin/firefox -new-tab
+
+[frame]
+    width = 0
+    color = "#000000"
+
+[shortcuts]
+    # shortcuts are specified as [modifier+][modifier+]...key
+    # available modifiers are 'ctrl', 'mod1' (the alt-key), 'mod2', 'mod3'
+    # and 'mod4' (windows-key)
+    # xev might be helpful to find names for keys
+
+    # close notification
+    close = ctrl+space
+
+    # close all notifications
+    close_all = ctrl+shift+space
+
+    # redisplay last message(s)
+    # On the US keyboard layout 'grave' is normally above TAB and left of '1'.
+    history = ctrl+shift+grave
+
+    # context menu
+    context = ctrl+shift+period
+
+[urgency_low]
+    # IMPORTANT: colors have to be defined in quotation marks.
