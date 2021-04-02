@@ -152,3 +152,28 @@
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
+    # Otherwise the '#' and following  would be interpreted as a comment.
+    background = "#999999"
+    foreground = "#000000"
+    timeout = 10
+
+[urgency_normal]
+    background = "#112240"
+    foreground = "#ffffff"
+    timeout = 10
+
+[urgency_critical]
+    background = "#900000"
+    foreground = "#ffffff"
+    timeout = 0
+
+
+# Every section that isn't one of the above is interpreted as a rules
+# to override settings for certain messages.
+# Messages can be matched by 'appname', 'summary', 'body' or 'icon'
+# and you can override the 'timeout', 'urgency', 'foreground', 'background'
+# and 'format'.
+# Shell-like globbing will get expanded.
+#
+# SCRIPTING
+# you can specify a script that gets run when the rule matches by settin
