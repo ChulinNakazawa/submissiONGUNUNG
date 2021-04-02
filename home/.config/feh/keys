@@ -1,0 +1,12 @@
+jump_back        H      Prior
+jump_fwd         L      Next
+menu_up          Up
+next_img         l      Right  space
+prev_img         h      Left   BackSpace
+remove           d      Delete
+scroll_down      C-j    C-Down
+scroll_left      C-h    C-Left
+scroll_right     C-l    C-Right
+scroll_up        C-k    C-Up
+toggle_actions   I
+togg
