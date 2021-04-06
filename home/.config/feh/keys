@@ -9,4 +9,8 @@ scroll_left      C-h    C-Left
 scroll_right     C-l    C-Right
 scroll_up        C-k    C-Up
 toggle_actions   I
-togg
+toggle_filenames i
+zoom_default     0
+zoom_fit         S-0
+zoom_in          r
+zoom_out         t
