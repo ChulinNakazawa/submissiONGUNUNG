@@ -13,4 +13,16 @@ fs  --full-screen --hide-pointer --sort filename
 exif --full-screen --hide-pointer --fontpath /usr/share/fonts/truetype/ttf-dejavu/ \
      --font DejaVuSansMono/8 --info "exiv2 '%f'"
 
-thumb_s  --thumbnails --cache-thumbnails --thumb-width 128 -
+thumb_s  --thumbnails --cache-thumbnails --thumb-width 128 --thumb-height 128 \
+         --limit-width 1024 --sort filename \
+         --fontpath /usr/share/fonts/truetype/ttf-dejavu/ --font DejaVuSans/8
+
+thumb_b  --thumbnails --cache-thumbnails --thumb-width 256 --thumb-height 256 \
+         --limit-width 1024 --sort filename \
+         --fontpath /usr/share/fonts/truetype/ttf-dejavu/ --font DejaVuSans/8
+
+thumb_s_nt --thumbnails --cache-thumbnails --thumb-width 128 --thumb-height 128 \
+           --limit-width 1024 --sort filename --index-name 0
+
+thumb_b_nt --thumbnails --cache-thumbnails --thumb-width 256 --thumb-height 256 \
+           --limit-width 1024 --sort filename --index-name 0
