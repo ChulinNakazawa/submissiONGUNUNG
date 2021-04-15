@@ -99,3 +99,28 @@ else
   alias rm 'rm -iv'
 end
 alias x xargs
+
+# git {{{2
+alias ga 'git add'
+alias gau 'git add -u'
+alias gb 'git branch'
+alias gcl 'git clone'
+alias gco 'git checkout'
+alias gd 'git diff'
+alias gl 'git l'
+alias glp 'git l -p'
+alias gpl 'git pull'
+alias gpu 'git push'
+alias gs 'git status'
+
+# others
+alias psg 'ps aux | g'
+alias 2pdf 'libreoffice --headless --convert-to pdf'
+alias clip 'xsel -ib'
+alias gdb 'command gdb -q'
+alias port '/sbin/ss -ntlp'
+alias r ruby
+alias rsync 'rsync --progress --partial'
+alias t task
+
+# vim:sw=2 sts=2 et fdm=marker
