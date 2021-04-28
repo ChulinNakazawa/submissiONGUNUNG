@@ -73,4 +73,34 @@ require('lazy').setup({
     'mfussenegger/nvim-dap',
     'neovim/nvim-lspconfig',
     {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
-    {'romgrk/nvim-treesitt
+    {'romgrk/nvim-treesitter-context', config = function() require('treesitter-context').setup() end},
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    'nvim-treesitter/playground',
+    {'nvim-telescope/telescope.nvim', dependencies = {'nvim-lua/plenary.nvim'}},
+    'justinmk/vim-dirvish',
+    'tpope/vim-fugitive',
+    'mhinz/vim-grepper',
+    'dstein64/vim-startuptime',
+    'preservim/vimux',
+    'folke/which-key.nvim',
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'gzip',
+        'matchit',
+        'matchparen',
+        'netrwPlugin',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
+  },
+})
+
+pcall(cmd, 'colorscheme tokyonight')
+
+-- Mappings {{{1
+local f
