@@ -30,4 +30,24 @@ local stl = {
   '%#DiffText#%m',              -- modified flag
   '%r',                         -- readonly flag
   '%*»',                        -- separator
-  '%#CursorLine#(%l/%L,%c)%*»', -- line no./no. of lines,col n
+  '%#CursorLine#(%l/%L,%c)%*»', -- line no./no. of lines,col no.
+  '%=«',                        -- right align the rest
+  '%#Cursor#%02B',              -- value of current char in hex
+  '%*«',                        -- separator
+  '%#ErrorMsg#%o',              -- byte offset
+  '%*«',                        -- separator
+  '%#Title#%y',                 -- filetype
+  '%*«',                        -- separator
+  '%#ModeMsg#%3p%%',            -- % through file in lines
+  '%*',                         -- restore normal highlight
+}
+o.statusline = table.concat(stl)
+
+function prequire(...)
+  local status, lib = pcall(require, ...)
+  if status then return lib end
+  return nil
+end
+
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+if not vim.loop.fs_stat(lazypath) 
