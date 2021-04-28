@@ -103,4 +103,29 @@ require('lazy').setup({
 pcall(cmd, 'colorscheme tokyonight')
 
 -- Mappings {{{1
-local f
+local function map(mode, lhs, rhs, opts)
+  local options = {noremap = true}
+  if opts then options = vim.tbl_extend('force', options, opts) end
+  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+end
+local function nmap(lhs, rhs, opts)
+  map('n', lhs, rhs, opts)
+end
+local function nmapp(lhs, rhs, opts)
+  local options = {}
+  if opts then options = vim.tbl_extend('force', options, opts) end
+  vim.api.nvim_set_keymap('n', lhs, rhs, options)
+end
+
+local function xnmap(keys, func, desc)
+  vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+end
+
+map('n', ':', ';')
+map('n', ';', ':')
+map('x', ':', ';')
+map('x', ';', ':')
+
+-- g
+nmap('ga', ':<C-u>CocList -I symbols<cr>')
+n
