@@ -128,4 +128,18 @@ map('x', ';', ':')
 
 -- g
 nmap('ga', ':<C-u>CocList -I symbols<cr>')
-n
+nmap('gj', ':HopLineAC<cr>')
+nmap('gk', ':opLineBC<cr>')
+xnmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+-- <leader>
+xnmap('<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+xnmap('<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+nmap('<leader>.', '<cmd>lua require("telescope.builtin").find_files({search_dirs={vim.fn.expand("%:h:p")}})<cr>', {silent=true})
+-- <leader>a (app)
+nmap('<leader>ag', '<cmd>%!genhdr<cr>')
+nmap('<leader>aG', '<cmd>%!genhdr windows<cr>')
+-- <leader>b (buffer)
+nmap('<leader>bn', '<cmd>bn<cr>')
+nmap('<leader>bp', '<cmd>bp<cr>')
+nmap('<leader>bN', '<cmd>new<cr>')
+nmap('<leader>bR', '<cmd>e<cr>
