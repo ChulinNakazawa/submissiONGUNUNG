@@ -32,4 +32,11 @@ application/postscript=zathura.desktop
 
 ; .doc .docx
 application/msword=wps-office-wps.desktop
-application/vnd.openxmlformats-officedocument.wordprocessingml.document=wps
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=wps-office-wps.desktop
+
+; .ppt .pptx
+application/vnd.ms-powerpoint=wps-office-wpp.desktop
+application/vnd.openxmlformats-officedocument.presentationml.presentation=wps-office-wpp.desktop
+
+; .epub
+application/epub+zip=ebook-viewer.desktop
