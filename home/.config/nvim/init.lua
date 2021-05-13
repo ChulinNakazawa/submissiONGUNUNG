@@ -189,4 +189,18 @@ nmap(',m', '<cmd>call CocLocations("ccls","textDocument/references",{"role":64})
 nmap(',r', '<cmd>call CocLocations("ccls","textDocument/references",{"role":8})<cr>') -- read
 nmap(',w', '<cmd>call CocLocations("ccls","textDocument/references",{"role":16})<cr>') -- write
 -- x (xref)
--- bases of up to 3 le
+-- bases of up to 3 levels
+nmap('xb', '<cmd>call CocLocations("ccls","$ccls/inheritance",{"levels":3})<cr>')
+-- derived of up to 3 levels
+nmap('xd', '<cmd>call CocLocations("ccls","$ccls/inheritance",{"derived":v:true})<cr>')
+-- derived of up to 3 levels
+nmap('xD', '<cmd>call CocLocations("ccls","$ccls/inheritance",{"derived":v:true,"levels":3})<cr>')
+-- caller
+nmap('xc', '<cmd>call CocLocations("ccls","$ccls/call")<cr>')
+-- callee
+nmap('xC', '<cmd>call CocLocations("ccls","$ccls/call",{"callee":v:true})<cr>')
+nmap('xt', '<cmd>call MarkPush()<cr>:call CocAction("jumpTypeDefinition")<cr>')
+-- misc
+nmap('<M-down>', '<cmd>cnext<cr>')
+nmap('<M-up>', '<cmd>cprevious<cr>')
+nmap('<M-j>', '<cmd>call MarkPush()<cr>:call Coc
