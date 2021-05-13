@@ -175,4 +175,18 @@ nmap('<leader>ss', '<cmd>lua require("telescope.builtin").grep_string()<cr>')
 nmap('<leader>sS', '<cmd>Grepper -noprompt -cword<cr>')
 -- <leader>t (toggle)
 nmap('<leader>tl', '<cmd>lua require("fn").toggle_loclist()<cr>')
-nmap('<leader>tn', '<cm
+nmap('<leader>tn', '<cmd>set number!<cr>')
+nmap('<leader>tq', '<cmd>lua require("fn").toggle_qf()<cr>')
+nmap('<leader>ts', '<cmd>set spell!<cr>')
+nmap('<leader>tw', '<cmd>set wrap!<cr>')
+-- w (window)
+nmapp('<leader>wo', '<C-w>o')
+nmapp('<leader>ws', '<C-w>s')
+nmapp('<leader>wv', '<C-w>v')
+--- , (references)
+nmap(',f', '<cmd>call CocLocations("ccls","textDocument/references",{"excludeRole":32})<cr>') -- not call
+nmap(',m', '<cmd>call CocLocations("ccls","textDocument/references",{"role":64})<cr>') -- macro
+nmap(',r', '<cmd>call CocLocations("ccls","textDocument/references",{"role":8})<cr>') -- read
+nmap(',w', '<cmd>call CocLocations("ccls","textDocument/references",{"role":16})<cr>') -- write
+-- x (xref)
+-- bases of up to 3 le
