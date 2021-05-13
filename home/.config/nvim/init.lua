@@ -203,4 +203,24 @@ nmap('xt', '<cmd>call MarkPush()<cr>:call CocAction("jumpTypeDefinition")<cr>')
 -- misc
 nmap('<M-down>', '<cmd>cnext<cr>')
 nmap('<M-up>', '<cmd>cprevious<cr>')
-nmap('<M-j>', '<cmd>call MarkPush()<cr>:call Coc
+nmap('<M-j>', '<cmd>call MarkPush()<cr>:call CocAction("jumpDefinition")<cr>')
+nmapp('<M-,>', '<Plug>(coc-references)')
+nmap('H', '<cmd>call MarkPop(-1)<cr>')
+nmap('L', '<cmd>call MarkPop(1)<cr>')
+nmap('K', '<cmd>silent call CocAction("doHover")<cr>')
+nmap('U', '<cmd>call MyHopThenDefinition()<cr>')
+nmap('zx', '<cmd>bdelete<cr>')
+
+-- Autocmd {{{1
+function nvim_create_augroups(definitions)
+  for group_name, definition in pairs(definitions) do
+    vim.api.nvim_command('augroup '..group_name)
+    vim.api.nvim_command('autocmd!')
+    for _, def in ipairs(definition) do
+      local command = table.concat(vim.tbl_flatten{'autocmd', def}, ' ')
+      vim.api.nvim_command(command)
+    end
+    vim.api.nvim_command('augroup END')
+  end
+end
+local autocmds = 
