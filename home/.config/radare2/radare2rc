@@ -1,0 +1,3 @@
+# requires radare2-extras/keystone
+e asm.assembler = x86.ks
+e cfg.newtab =
