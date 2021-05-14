@@ -223,4 +223,28 @@ function nvim_create_augroups(definitions)
     vim.api.nvim_command('augroup END')
   end
 end
-local autocmds = 
+local autocmds = {
+  restore_cursor = {
+    {'BufRead', '*', [[call setpos(".", getpos("'\""))]]};
+  };
+  packer = {
+    {'BufWritePost', 'plugins.lua', 'PackerCompile'};
+  };
+  toggle_search_highlighting = {
+    {'InsertEnter', '*', 'setlocal nohlsearch'};
+  };
+  coc_show_hover = {
+    -- {'CursorHold', '*', 'call My_coc_hover()'};
+    -- {'CursorHoldI', '*', 'silent call CocActionAsync("showSignatureHelp")'};
+  };
+}
+nvim_create_augroups(autocmds)
+
+vim.api.nvim_exec([[
+let g:mark_ring = [{},{},{},{},{},{},{},{},{},{}]
+let g:mark_ring_i = 0
+
+fu! MarkPush()
+  let g:mark_ring[g:mark_ring_i] = {'path': expand('%:p'), 'line': line('.'), 'col': col('.')}
+  let g:mark_ring_i = (g:mark_ring_i + 1) % len(g:mark_ring)
+endf
