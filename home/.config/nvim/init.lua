@@ -248,3 +248,27 @@ fu! MarkPush()
   let g:mark_ring[g:mark_ring_i] = {'path': expand('%:p'), 'line': line('.'), 'col': col('.')}
   let g:mark_ring_i = (g:mark_ring_i + 1) % len(g:mark_ring)
 endf
+
+fu! MarkPop(d)
+  let g:mark_ring[g:mark_ring_i] = {'path': expand('%:p'), 'line': line('.'), 'col': col('.')}
+  let g:mark_ring_i = (g:mark_ring_i + a:d + len(g:mark_ring)) %  len(g:mark_ring)
+  let mark = g:mark_ring[g:mark_ring_i]
+  if !has_key(mark, 'path')
+    echo 'empty g:mark_ping'
+    return
+  endif
+  if mark.path !=# expand('%:p')
+    silent exec 'e ' . fnameescape(mark.path)
+  endif
+  call cursor(mark.line, mark.col)
+endf
+
+fu! MyHopThenDefinition()
+  lua require'hop'.hint_words()
+  call MarkPush()
+  call CocAction("jumpDefinition")
+endf
+
+fu! My_coc_hover()
+  if (coc#float#has_float() == 0 && CocHasProvider('hover') == 1)
+    silent call
