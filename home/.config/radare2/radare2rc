@@ -1,3 +1,7 @@
 # requires radare2-extras/keystone
 e asm.assembler = x86.ks
-e cfg.newtab =
+e cfg.newtab = true
+e scr.prompt.sect = true
+e scr.color = 3
+e scr.utf8 = true
+eco onedark
