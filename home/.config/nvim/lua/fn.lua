@@ -20,3 +20,8 @@ M.toggle_loclist = function()
     end
   end
   if not vim.tbl_isempty(vim.fn.getloclist()) then
+    vim.cmd 'lopen'
+  end
+end
+
+return M
