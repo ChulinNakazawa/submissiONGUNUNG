@@ -271,4 +271,25 @@ endf
 
 fu! My_coc_hover()
   if (coc#float#has_float() == 0 && CocHasProvider('hover') == 1)
-    silent call
+    silent call CocActionAsync('doHover')
+  endif
+endf
+
+fu! C_init()
+  setl cino+=g0,:0,j1,l1,N-s,t0,(0
+endf
+aug C
+  au!
+  au FileType c,cpp :call C_init()
+aug END
+
+fu! Nim_init()
+  setl nofoldenable
+endf
+aug Nim
+  au!
+  au FileType nim :call Nim_init()
+aug END
+]], true)
+
+require 'plugins'
