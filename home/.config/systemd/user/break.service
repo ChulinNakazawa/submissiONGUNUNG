@@ -1,0 +1,6 @@
+[Unit]
+Description=Break Service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/notify-send 'Time for a Break'
