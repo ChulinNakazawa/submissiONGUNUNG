@@ -1,2 +1,5 @@
 [Service]
-ExecStart=/usr/bin/xscreensav
+ExecStart=/usr/bin/xscreensaver -no-splash
+
+[Install]
+WantedBy=graphical.target
