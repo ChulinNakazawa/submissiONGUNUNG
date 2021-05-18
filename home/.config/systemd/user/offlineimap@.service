@@ -1,0 +1,13 @@
+
+[Unit]
+Description=OfflineIMAP IMAP/Maildir Synchronization
+Documentation=man:offlineimap
+
+[Service]
+ExecStart=/usr/bin/offlineimap -u quiet -a %i
+Restart=always
+RestartSec=600
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target

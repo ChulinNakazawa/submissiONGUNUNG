@@ -5,4 +5,4 @@ Description=notify-client -> notify-server -> notify-send
 ExecStart=/home/ray/bin/notify-server
 
 [Install]
-WantedBy=graphical.
+WantedBy=graphical.target
