@@ -1,0 +1,10 @@
+
+[Unit]
+Description=keynav
+Documentation=man:keynav(1)
+
+[Service]
+ExecStart=/home/ray/.local/bin/keynav
+
+[Install]
+WantedBy=graphical.target

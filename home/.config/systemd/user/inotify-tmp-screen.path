@@ -1,0 +1,6 @@
+
+[Path]
+PathModified=/tmp/screen.jpg
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,4 @@
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rsync -a /tmp/screen.jpg linode-ca:/tmp/
