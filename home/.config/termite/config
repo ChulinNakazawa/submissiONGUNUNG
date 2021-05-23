@@ -93,4 +93,49 @@ modify_other_keys = true
 #background = #101010
 #foreground = #66FF66
 #highlight = #505050
-#cursor =
+#cursor = #66ff66
+##black
+#color0 = #1c1c1c
+#color8 = #4d4d4d
+##red
+#color1 = #D81860
+#color9 = #F00060
+##green
+#color2 = #60FF60
+#color10 = #70FF70
+##yellow
+#color3 = #f9fd75
+#color11 = #f9fd80
+##blue
+#color4 = #4695c8
+#color12 = #5a9dc8
+##magenta
+#color5 = #a78edb
+#color13 = #b29fdb
+##cyan
+#color6 = #43afce
+#color14 = #69b8ce
+##white
+#color7 = #f3ebe2
+#color15 = #eeeeee
+
+
+# Molokai theme
+# [colors]
+background= rgb(32,32,32)
+foreground= #d0d0d0
+#foreground= #66ff66
+highlight = #505050
+cursor = #66ff66
+color0= #000000
+color1= #960050
+color2= #66aa11
+color3= #c47f2c
+color4= #30309b
+color5= #7e40a5
+color6= #3579a8
+color7= #9999aa
+color8= #666666
+color9= #ff0090
+color10= #80ff00
+color11= #ffba6
