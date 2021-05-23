@@ -138,4 +138,22 @@ color7= #9999aa
 color8= #666666
 color9= #ff0090
 color10= #80ff00
-color11= #ffba6
+color11= #ffba68
+color12= #5f5fee
+color13= #bb88dd
+color14= #4eb4fa
+color15= #c0c0c0
+
+[hints]
+#font = Monospace 12
+#foreground = #dcdccc
+#background = #3f3f3f
+#active_foreground = #e68080
+#active_background = #3f3f3f
+#padding = 2
+#border = #3f3f3f
+#border_width = 0.5
+#roundness = 2.0
+
+[terminal]
+term = xterm-termite-24bits
