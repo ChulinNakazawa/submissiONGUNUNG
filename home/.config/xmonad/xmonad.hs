@@ -600,3 +600,204 @@ scratchpads =
     doBottomRightFloat = customFloating $ W.RationalRect (2/3) (2/3) (1/3) (1/3)
     doLeftFloat = customFloating $ W.RationalRect 0 0 (1/3) 1
     orgFloat = customFloating $ W.RationalRect (1/2) (1/2) (1/2) (1/2)
+
+myConfig xmobar = docks . dynamicProjects myProjects . withNavigation2DConfig myNav2DConf . ewmh $ withUrgencyHook LibNotifyUrgencyHook $ def
+    { terminal           = myTerminal
+    , focusFollowsMouse  = False
+    , borderWidth        = 1
+    , modMask            = mod4Mask
+    , workspaces         = myWorkspaces
+    , normalBorderColor  = "#000000"
+    , focusedBorderColor = "#3939ff"
+    , mouseBindings      = myMouseBindings
+    , layoutHook         = myLayout
+    , manageHook         = myManageHook
+    , handleEventHook    = myHandleEventHook -- <+> focusFollow -- >> clockEventHook
+    , logHook            = historyHook >> myDynamicLog xmobar
+    , startupHook        = checkKeymap (myConfig xmobar) myKeys >> spawn "~/bin/start-tiling" >> setWMName "LG3D"
+} `additionalKeysP` myKeys
+
+myPromptKeymap = M.union defaultXPKeymap $ M.fromList
+                 [
+                   ((controlMask, xK_g), quit)
+                 , ((controlMask, xK_m), setSuccess True >> setDone True)
+                 , ((controlMask, xK_j), setSuccess True >> setDone True)
+                 , ((controlMask, xK_h), deleteString Prev)
+                 , ((controlMask, xK_f), moveCursor Next)
+                 , ((controlMask, xK_b), moveCursor Prev)
+                 , ((controlMask, xK_p), moveHistory W.focusDown')
+                 , ((controlMask, xK_n), moveHistory W.focusUp')
+                 , ((mod1Mask, xK_p), moveHistory W.focusDown')
+                 , ((mod1Mask, xK_n), moveHistory W.focusUp')
+                 , ((mod1Mask, xK_b), moveWord Prev)
+                 , ((mod1Mask, xK_f), moveWord Next)
+                 ]
+
+myXPConfig = def
+    { font = "xft:DejaVu Sans Mono:pixelsize=16"
+    , bgColor           = "#0c1021"
+    , fgColor           = "#f8f8f8"
+    , fgHLight          = "#f8f8f8"
+    , bgHLight          = "steelblue3"
+    , borderColor       = "DarkOrange"
+    , promptBorderWidth = 1
+    , position          = Top
+    , historyFilter     = deleteConsecutive
+    , promptKeymap = myPromptKeymap
+    }
+
+-- | Like 'spawn', but uses bash and returns the 'ProcessID' of the launched application
+spawnBash :: MonadIO m => String -> m ProcessID
+spawnBash x = xfork $ executeFile "/bin/bash" False ["-c", encodeString x] Nothing
+
+main = do
+    d <- openDisplay ""
+    let w = fromIntegral $ displayWidth d 0 :: Int
+        h = fromIntegral $ displayHeight d 0 :: Int
+    let barWidth = 160 --h `div` 12
+    let barHeight = h `div` 35
+    let fontSize = h `div` 54
+    xmobar <- spawnPipe "killall xmobar; xmobar"
+    spawn $ "killall trayer; trayer --align left --edge top --expand false --width " ++ show barWidth ++ " --transparent true --tint 0x000000 --widthtype pixel --SetPartialStrut true --SetDockType true --height 32"
+    xmonad $ myConfig xmobar
+
+{-
+ - SearchMap
+ -}
+
+searchBindings = [ ("M-S-/", S.promptSearch myXPConfig multi) ] ++
+                 [ ("M-/ " ++ name, S.promptSearch myXPConfig e) | e@(S.SearchEngine name _) <- engines, length name == 1 ]
+  where
+    promptSearch (S.SearchEngine _ site)
+      = inputPrompt myXPConfig "Search" ?+ \s ->
+      (S.search "chromium" site s >> viewWeb)
+    viewWeb = windows (W.view "web")
+
+    mk = S.searchEngine
+    engines = [ mk "h" "http://www.haskell.org/hoogle/?q="
+      , mk "g" "http://www.google.com/search?num=100&q="
+      , mk "t" "http://developer.gnome.org/search?q="
+      , mk "w" "http://en.wikipedia.org/wiki/Special:Search?go=Go&search="
+      , mk "d" "http://duckduckgo.com/?q="
+      , mk "m" "https://developer.mozilla.org/en-US/search?q="
+      , mk "r" "http://www.ruby-doc.org/search.html?sa=Search&q="
+      , mk "p" "http://docs.python.org/search.html?check_keywords=yes&area=default&q="
+      , mk "s" "https://scholar.google.de/scholar?q="
+      , mk "i" "https://ixquick.com/do/search?q="
+      , mk "dict" "http://www.dict.cc/?s="
+      , mk "imdb" "http://www.imdb.com/find?s=all&q="
+      , mk "def" "http://www.google.com/search?q=define:"
+      , mk "img" "http://images.google.com/images?q="
+      , mk "gh" "https://github.com/search?q="
+      , mk "bb" "https://bitbucket.org/repo/all?name="
+      , mk "alpha" "http://www.wolframalpha.com/input/i="
+      , mk "ud" "http://www.urbandictionary.com/define.php?term="
+      , mk "rtd" "http://readthedocs.org/search/project/?q="
+      , mk "null" "http://nullege.com/codes/search/"
+      , mk "sf" "http://sourceforge.net/search/?q="
+      , mk "acm" "https://dl.acm.org/results.cfm?query="
+      , mk "math" "http://mathworld.wolfram.com/search/?query="
+      ]
+    multi = S.namedEngine "multi" $ foldr1 (S.!>) engines
+
+wsWeb = "web"
+wsGen = "gen"
+wsIM = "im"
+wsEmacs = "emacs"
+
+wsFloat = "float"
+wsGimp = "gimp"
+wsWechat = "wechat"
+wsInkscape = "inkscape"
+wsMail = "mail"
+
+myProjects :: [Project]
+myProjects =
+  [ Project wsWeb "~" . Just $ spawn "chromium"
+  , Project wsGen "~" . Just $ spawn "alacritty -t zsh -e zsh -ic \"tmux new -As default\""
+  , Project wsIM "~" . Just $ spawn (alacritty "irc")
+  , Project wsEmacs "~" . Just $ spawn "LC_CTYPE=zh_CN.UTF-8 emacs"
+
+  , Project wsWechat "/tmp" . Just $ spawn "alacritty -t zsh -e zsh -ic \"tmux new -As weechat\""
+  , Project wsMail "/tmp" . Just $ spawn (alacritty "neomutt")
+  , Project wsGimp "/tmp" . Just $ spawn "gimp"
+  , Project wsInkscape "/tmp" . Just $ spawn "inkscape"
+  ]
+
+myWorkspaces = map projectName myProjects
+
+myCommands =
+    [ ("wallpaper", safeSpawn "change-wallpaper" [])
+    --, ("fade", fadePrompt myXPConfig)
+    ]
+
+data TitledPrompt = TitledPrompt String
+
+instance XPrompt TitledPrompt where
+    showXPrompt (TitledPrompt t)  = t ++ ": "
+    commandToComplete _ c   = c
+    nextCompletion    _     = getNextCompletion
+
+mkCommandPrompt :: XPConfig -> [(String, X ())] -> X ()
+mkCommandPrompt xpc cs = do
+    mkXPrompt (TitledPrompt "Command") xpc compl $ \i -> whenJust (find ((==i) . fst) cs) snd
+  where
+    compl s = return . filter (searchPredicate xpc s) . map fst $ cs
+
+mainCommandPrompt xpc = do
+  defs <- defaultCommands
+  mkCommandPrompt xpc $ nubBy ((==) `on` fst) $ myCommands ++ defs
+
+getFilesWithExt :: [String] -> String -> IO [String]
+getFilesWithExt exts s = fmap lines $ runProcessWithInput "sh" [] ("ls -d -- " ++ s ++ "*/ " ++ s ++ "*." ++ f ++ "\n")
+  where
+    f = if length exts == 1 then head exts else ('{':) . (++"}") $ intercalate "," exts
+
+{- | Get the user's response to a prompt an launch an application using the
+   input as command parameters of the application.-}
+launchApp :: XPConfig -> String -> [String] -> X ()
+launchApp config app exts = mkXPrompt (TitledPrompt app) config (getFilesWithExt exts) $ launch app
+  where
+    launch :: MonadIO m => String -> String -> m ()
+    launch app params = spawn $ app ++ " " ++ completionToCommand (undefined :: Shell) params
+
+-- from:
+-- https://github.com/pjones/xmonadrc/blob/master/src/XMonad/Local/Action.hs
+--
+-- Useful when a floating window requests stupid dimensions.  There
+-- was a bug in Handbrake that would pop up the file dialog with
+-- almost no height due to one of my rotated monitors.
+
+forceCenterFloat :: ManageHook
+forceCenterFloat = doFloatDep move
+  where
+    move :: W.RationalRect -> W.RationalRect
+    move _ = W.RationalRect x y w h
+
+    w, h, x, y :: Rational
+    w = 3/5
+    h = 3/5
+    x = (1-w)/2
+    y = (1-h)/2
+
+--- XMonad.Actions.ConditionalKeys
+
+data XCond = WS | LD
+
+-- | Choose an action based on the current workspace id (WS) or
+-- layout description (LD).
+chooseAction :: XCond -> (String->X()) -> X()
+chooseAction WS f = withWindowSet (f . W.currentTag)
+chooseAction LD f = withWindowSet (f . description . W.layout . W.workspace . W.current)
+
+
+-- | If current workspace or layout string is listed, run the associated
+-- action (only the first match counts!) If it isn't listed, then run the default
+-- action (marked with empty string, \"\"), or do nothing if default isn't supplied.
+bindOn :: XCond -> [(String, X())] -> X()
+bindOn xc bindings = chooseAction xc $ chooser where
+    chooser xc = case find ((xc==).fst) bindings of
+        Just (_, action) -> action
+        Nothing -> case find ((""==).fst) bindings of
+            Just (_, action) -> action
+            Nothing -> return ()
