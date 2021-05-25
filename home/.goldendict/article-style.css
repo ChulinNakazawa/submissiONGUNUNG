@@ -55,4 +55,52 @@ body
 .gdactivearticle .gddictname
 {
   font-size: 13px;
-  font-weight: norm
+  font-weight: normal;
+  margin: -6px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  
+  float: right;
+  border: 1px solid #3399FF;
+  color: #0066cc;
+  background: #deecf8;
+}
+
+.gddicticon
+{
+  display: inline;
+  vertical-align: text-bottom;
+  float: right;
+  padding-right: 0em;
+  padding-left: 0.3em;
+}
+
+/* The first headword in a (possibly) multi-headword DSL article */
+.gdarticlebody > span:first-child .dsl_headwords,
+.gdarticlebody > h3:first-child
+{
+  margin-top: -3px;
+  display: inline-block;
+}
+
+.gdspellsuggestion
+{
+  /* Add some vertical space before the article */
+  margin-top: 1.5em;
+}
+
+.dsl_ex
+{
+  color: steelblue;
+}
+
+.dsl_stress
+{
+  color: darkblue;
+}
+
+.dsl_stress_without_accent {
+  display:inline;
+}
+
+.dsl_st
