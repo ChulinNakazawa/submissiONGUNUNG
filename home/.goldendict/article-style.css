@@ -10,3 +10,49 @@ body
 
 .gdarticle 
 { 
+  margin-top: 0.1em;
+  margin-bottom: 0.4em;
+  padding: 5px;
+  border: 1px solid #d0dde2;
+  border-radius: 8px;  
+} 
+ 
+.gdactivearticle 
+{ 
+  border: 1px solid #3399FF;
+} 
+
+.gdarticleseparator + script + .gdactivearticle .gddictname
+{
+  border-top: 1px solid #3399FF;
+}
+
+.gdarticleseparator 
+{ 
+  display: none; 
+}
+
+.gddictname 
+{
+  font-size: 12px;
+  font-weight: normal;
+  float: right;
+  border: 0px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 6px;
+  margin: -6px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  padding-right: 0.4em;
+  color: #4480f8;
+  background: #E0E8F0;
+
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+} 
+
+.gdactivearticle .gddictname
+{
+  font-size: 13px;
+  font-weight: norm
