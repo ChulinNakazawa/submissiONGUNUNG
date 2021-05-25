@@ -103,4 +103,34 @@ body
   display:inline;
 }
 
-.dsl_st
+.dsl_stress_with_accent {
+  display: none;
+}
+
+.dsl_p .dsl_ex .dsl_lang
+{
+  color: green;
+}
+
+::selection {
+  background:#cc0000;
+	color:#fff;
+}
+
+code::selection {
+	background: #333333;
+}
+
+.dsl_s_wav img, .lsa_play img, .forvo_play img[alt="Play"] {
+    display: none;
+}
+
+.dsl_s_wav a, .lsa_play td:nth-of-type(1) a, .forvo_play td:nth-of-type(1) a {
+    display: inline-block;
+    width: 17px;
+    height: 16px;
+    background: url('file:///control_play_lingvo.png') no-repeat center;
+    vertical-align: text-bottom;
+    -webkit-user-select: none;
+    user-select: none;
+}
