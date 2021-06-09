@@ -45,4 +45,26 @@ GenericName[zh_CN]=网页浏览器
 GenericName[zh_HK]=網頁瀏覽器
 GenericName[zh_TW]=網頁瀏覽器
 # Not translated in KDE, from Epiphany 2.26.1-0ubuntu1.
-Gen
+GenericName[bn]=ওয়েব ব্রাউজার
+GenericName[fil]=Web Browser
+GenericName[hr]=Web preglednik
+GenericName[id]=Browser Web
+GenericName[or]=ଓ୍ବେବ ବ୍ରାଉଜର
+GenericName[sk]=WWW prehliadač
+GenericName[sr]=Интернет прегледник
+GenericName[te]=మహాతల అన్వేషి
+GenericName[vi]=Bộ duyệt Web
+# Gnome and KDE 3 uses Comment.
+Comment=Access the Internet
+Comment[ar]=الدخول إلى الإنترنت
+Comment[bg]=Достъп до интернет
+Comment[bn]=ইন্টারনেটটি অ্যাক্সেস করুন
+Comment[ca]=Accedeix a Internet
+Comment[cs]=Přístup k internetu
+Comment[da]=Få adgang til internettet
+Comment[de]=Internetzugriff
+Comment[el]=Πρόσβαση στο Διαδίκτυο
+Comment[en_GB]=Access the Internet
+Comment[es]=Accede a Internet.
+Comment[et]=Pääs Internetti
+Comment[fi]=Käytä in
