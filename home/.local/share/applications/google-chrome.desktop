@@ -147,4 +147,35 @@ Name[lv]=Jauns logs
 Name[ml]=പുതിയ വിന്‍ഡോ
 Name[mr]=नवीन विंडो
 Name[nl]=Nieuw venster
-Name[n
+Name[no]=Nytt vindu
+Name[pl]=Nowe okno
+Name[pt]=Nova janela
+Name[pt_BR]=Nova janela
+Name[ro]=Fereastră nouă
+Name[ru]=Новое окно
+Name[sk]=Nové okno
+Name[sl]=Novo okno
+Name[sr]=Нови прозор
+Name[sv]=Nytt fönster
+Name[sw]=Dirisha Jipya
+Name[ta]=புதிய சாளரம்
+Name[te]=క్రొత్త విండో
+Name[th]=หน้าต่างใหม่
+Name[tr]=Yeni Pencere
+Name[uk]=Нове вікно
+Name[vi]=Cửa sổ Mới
+Name[zh_CN]=新建窗口
+Name[zh_TW]=開新視窗
+Exec=chrome
+TargetEnvironment=Unity
+
+[NewIncognito Shortcut Group]
+Name=New Incognito Window
+Name[ar]=نافذة جديدة للتصفح المتخفي
+Name[bg]=Нов прозорец „инкогнито“
+Name[bn]=নতুন ছদ্মবেশী উইন্ডো
+Name[ca]=Finestra d'incògnit nova
+Name[cs]=Nové anonymní okno
+Name[da]=Nyt inkognitovindue
+Name[de]=Neues Inkognito-Fenster
+Na
