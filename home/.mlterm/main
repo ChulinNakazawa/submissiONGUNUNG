@@ -1,0 +1,27 @@
+#
+# Copy to ~/.mlterm/main
+#
+
+# -- Window --
+
+# display =
+
+# geometry =
+
+# app_name = mlterm
+  
+# title = mlterm
+  
+# icon_name = mlterm
+
+# icon_path =
+
+# screen_width_ratio = 100
+
+# screen_height_ratio = 100
+
+# inner_border = 2
+
+# layout_inner_border = 0
+
+# -- Ter
