@@ -57,4 +57,49 @@ termtype = xterm-256color
 
 # use_dynamic_comb = false
 
-# (assames
+# (assamese,bengali,gujarati,hindi,kannada,malayalam,oriya,punjabi,roman,tamil,telugu)
+# iscii_lang = malayalam
+
+# big5_buggy = false
+
+# col_size_of_width_a = 1
+
+# (none,cjk,mongol)
+# vertical_mode = none
+
+# use_vertical_cursor = false
+
+# use_multi_column_char = false
+
+# receive_string_via_ucs = false
+
+# auto_detect_encodings =
+
+# use_auto_detect = false
+
+# console_encoding = auto
+
+# -- Font --
+# fontsize = 26
+
+# font_size_range = 6-30
+
+# step_in_changing_font_size = 1
+
+# use_point_size = false
+
+# use_variable_column_width = false 
+
+# type_engine = cairo
+
+use_anti_alias = true
+
+# use_cp932_ucs_for_xft = true
+
+# not_use_unicode_font = false
+
+# unicode_noconv_areas =
+
+# only_use_unicode_font = false
+
+# iso88591_font_for_usasci
