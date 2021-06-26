@@ -215,4 +215,53 @@ bel_mode = none
 
 # click_interval = 250
   
-# static_backscroll
+# static_backscroll_mode = false
+
+# exit_backscroll_by_pty = false
+
+# logging_vt_seq = false
+
+# (raw,ttyrec)
+# vt_seq_format = raw
+
+# use_clipboard = true
+
+# logging_msg = true
+
+# server_list =
+
+# default_server =
+
+# always_show_dialog = false
+
+# ssh_public_key = 
+
+# ssh_private_key = 
+
+# cipher_list =
+
+# ssh_keepalive_interval = 0
+
+# ssh_x11_forwarding = false
+
+# allow_scp = false
+
+# ssh_auto_reconnect = false
+
+# auto_restart = true
+
+# allow_osc52 = false
+
+# use_local_echo = false
+
+# use_alt_buffer = true
+
+# use_ansi_colors = true
+
+# allow_change_shortcut = false
+
+# working_directory =
+conf_menu_path_2 = mlterm-zoom
+wall_picture = 
+type_engine = cairo
+input_method = xim

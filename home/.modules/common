@@ -1,0 +1,3 @@
+if {[string length [info commands lmap]] == 0} {
+  proc lmap {i xs cmd} {
+    upvar 
