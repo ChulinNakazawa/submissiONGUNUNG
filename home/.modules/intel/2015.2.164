@@ -1,0 +1,24 @@
+#%Module
+source $env(MODULEPATH)/common
+conflict gcc
+
+proc setI {args} {
+  prepend-path -delim " " CPPFLAGS [lmap i $args {set _dummy -I$i}]
+}
+
+proc setL {args} {
+  prepend-path -delim " " LDFLAGS [lmap i $args {set _dummy -L$i}]
+  #prepend-path LD_RUN_PATH [join $args :]  icc does not seem to recognize LD_RUN_PATH flags
+  prepend-path LD_LIBRARY_PATH [join $args :]
+}
+
+set root10 /opt/intel/composer_xe_2015.2.164
+
+setenv CC icc
+setenv CXX icpc
+setenv FC ifort
+setenv F77 ifort
+setenv F90 ifort
+setenv F95 ifort
+setenv CPATH $root10/ipp/include:$root10/mkl/include:$root10/tbb/include
+prep
