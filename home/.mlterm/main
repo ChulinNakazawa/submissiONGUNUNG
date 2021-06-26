@@ -102,4 +102,61 @@ use_anti_alias = true
 
 # only_use_unicode_font = false
 
-# iso88591_font_for_usasci
+# iso88591_font_for_usascii = false
+
+# box_drawing_font = noconv
+
+# compose_dec_special_font = false
+
+# use_bold_font = true
+
+# use_italic_font = true
+
+# leftward_double_drawing = false
+
+# unicode_full_width_areas =
+
+# use_ot_layout = false
+
+# ot_script = latn
+
+# ot_features = liga,clig,dlig,hlig,rlig
+
+# -- Appearance --
+use_transbg = false
+
+# alpha = 255
+
+# (8,16,24,32)
+# depth = 0
+
+use_scrollbar = false
+
+# scrollbar_mode = left
+
+# (simple,sample,sample2,sample3,next,motif,athena,mozmodern)
+# scrollbar_view_name = simple
+
+fg_color = white
+
+bg_color = black
+
+# sb_fg_color =
+
+# sb_bg_color =
+
+# cursor_fg_color = 
+
+# cursor_bg_color =
+
+# bd_color =
+
+# it_color =
+
+# ul_color =
+
+# bl_color =
+
+# co_color =
+
+# vt_co
