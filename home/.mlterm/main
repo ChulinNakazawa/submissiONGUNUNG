@@ -159,4 +159,60 @@ bg_color = black
 
 # co_color =
 
-# vt_co
+# vt_color_mode = high
+
+# hide_underline = false
+
+# wall_picture =
+
+fade_ratio = 100
+
+brightness = 10
+
+# contrast = 100
+
+# gamma = 100
+
+# line_space = 0
+
+# letter_space = 0
+
+# borderless = false
+
+# blink_cursor = false
+
+# -- Others --
+use_xim = true
+  
+# (xim,uim,scim,m17n-lib,ibus,none)
+# input_method = xim
+
+# tabsize = 8
+
+# logsize = 128
+
+# word_separators = " ,.:;/@"
+
+# regard_uri_as_word = false
+
+# (none,mod1,mod2,mod3,mod4,meta,alt,super,hyper)
+# mod_meta_key = none
+
+# (none,esc,8bit)
+mod_meta_mode = esc
+
+# (none,sound,visual,sound|visual)
+bel_mode = none
+
+# use_urgent_bell = false
+
+# (none,blend,genuine)
+# daemon_mode = none
+
+# use_extended_scroll_shortcut = false
+
+# init_str =
+
+# click_interval = 250
+  
+# static_backscroll
