@@ -1,0 +1,7 @@
+#%Module
+source $env(MODULEPATH)/common
+conflict openmpi
+
+proc setL {args} {
+  prepend-path -delim " " LDFLAGS [lmap i $args {set _dummy -L$i}]
+  #prepend-path LD_RUN_PATH [join $args :]  icc does not seem to r

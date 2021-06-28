@@ -21,4 +21,8 @@ setenv F77 ifort
 setenv F90 ifort
 setenv F95 ifort
 setenv CPATH $root10/ipp/include:$root10/mkl/include:$root10/tbb/include
-prep
+prepend-path PATH $root10/bin/intel64
+prepend-path MANPATH $root10/man
+setI $root10/compiler/include $root10/mkl/include $root10/ipp/include $root10/tbb/include
+setL $root10/compiler/lib/intel64 $root10/ipp/lib/intel64 $root10/tbb/lib/intel64 $root10/mpirt/lib/intel64 $root10/mkl/lib/intel64 \
+     $root10/compiler/lib/mic $root10/ipp/lib/mic $root10/tbb/lib/mic $root10/mpirt/lib/mic $root10/mkl/lib/mic
