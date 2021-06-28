@@ -1,0 +1,15 @@
+
+set imap_user=emacsray@gmail.com
+set imap_passive=yes
+set imap_keepalive=300
+set folder=imaps://imap.gmail.com
+unmailboxes *
+mailboxes =INBOX =[Gmail]/Drafts =[Gmail]/'Sent Mail' =[Gmail]/Spam
+set sendmail="sendmail"
+set spoolfile=+INBOX \
+    record=+ \
+    postponed=+[Gmail]/Drafts \
+    record=+[Gmail]/Drafts \
+    smtp_url=smtps://emacsray@smtp.gmail.com \
+    smtp_pass=$imap_pass \
+    from=emacsray@gmail.com

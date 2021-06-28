@@ -1,0 +1,25 @@
+# set default
+  color normal color250 default
+
+# main colors
+  color status green default
+  color indicator brightwhite color235
+  color tree blue default
+  color error brightred default
+  color message brightyellow default
+
+#
+# message states
+#
+# order matters here since some states override others
+#
+
+# messages to me
+  color index brightblack default "~P"
+  color index brightred default "~F"
+
+# threads containing new messages
+  color index brightcyan default "~(~N)"
+
+# new messages themselves
+  color index yellow default "~N"
