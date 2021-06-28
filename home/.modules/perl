@@ -1,0 +1,3 @@
+#%Module
+prepend-path PATH $env(HOME)/perl5/bin
+prepend-path PERL5LIB "$env(HOME)/perl5/lib/perl5"

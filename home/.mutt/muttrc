@@ -1,0 +1,48 @@
+
+# Headers {{{1
+ignore *
+unignore from to cc bcc date organization
+unhdr_order *
+hdr_order From: To: Cc: Subject: Date:
+
+# Settings {{{1
+unset abort_unmodified
+set assumed_charset="utf-8:gbk"
+set attach_charset="utf-8:gbk"
+set beep_new
+set charset="utf-8"
+set edit_headers
+set fast_reply
+set forward_format = "Fwd: %s"
+set forward_quote
+set include
+set ispell = "aspell -e -c"
+set mail_check=120
+set menu_scroll
+set pager_context = 5
+set pager_index_lines = 5
+set pager_stop
+set pipe_decode
+set quit
+set read_inc=100
+set realname="Ray Song"
+set reply_to=yes
+set resolve
+set reverse_alias
+set reverse_name
+set rfc2047_parameters=yes
+set search_context=3
+set sendmail="msmtp"
+set sort=threads
+set sort_aux=reverse-last-date-received
+set ssl_force_tls = yes
+set text_flowed
+set timeout = 3
+unset mark_old
+unset markers
+unset sort_re
+unset wait_key
+
+# Formats {{{1
+set attribution='On %{%F}, %n wrote:'
+set alias_format = "%4n %t %-20a %r"
