@@ -23,3 +23,29 @@
 
 # new messages themselves
   color index yellow default "~N"
+  color index brightyellow default "~N ~p"
+
+# tagged
+  color index brightgreen default "~T"
+
+# deleted
+  color index red default "~D"
+
+# set up the headers
+  color header brightyellow default "^from:"
+  color header yellow default "^to:"
+  color header yellow default "^cc:"
+  color header blue default "^date:"
+  color header brightblue default "^subject:"
+
+# message bodies
+  color attachment brightblack default
+  color search red brightblack
+  color signature cyan default
+  color tilde blue default
+
+# urls
+  color body brightblue default "(^|<| )mailto:[^ ]+@[^ ]( |>|$)"
+  color body brightblue default "(^|<| )(http|https|ftp|file|telnet|news|finger)://[^ ]+( |>|$)"
+
+# smileys, the right way and 
