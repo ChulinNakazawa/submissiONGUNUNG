@@ -1,0 +1,11 @@
+
+# MPD
+mpd_music_dir = "/home/ray/Music"
+
+# Bars
+titles_visibility = "no"
+header_visibility = "no"
+statusbar_visibility = "yes"
+
+# Facility
+playlist_shorten_total_times = "yes"

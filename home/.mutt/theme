@@ -48,4 +48,24 @@
   color body brightblue default "(^|<| )mailto:[^ ]+@[^ ]( |>|$)"
   color body brightblue default "(^|<| )(http|https|ftp|file|telnet|news|finger)://[^ ]+( |>|$)"
 
-# smileys, the right way and 
+# smileys, the right way and the backward-ass euro way
+  color body brightmagenta default "(^| )+(|[<>|])[8;:](|[^ ])[)(/|DOPS]( |$)+"
+  color body brightmagenta default "(^| )+[)(/|DOPS](|[^ ])[8;:](|[<>|])( |$)+"
+
+# *bold*, _underline_, and /italic/
+  color body brightcyan default "(^| )\\*[^*]+\\*( |$)"
+  color body brightcyan default "(^| )_[^_]+_( |$)"
+  color body brightcyan default "(^| )/[^/]+/( |$)"
+
+# quote blocks
+  color quoted magenta default
+  color quoted1 cyan default
+  color quoted2 green default
+  color quoted3 magenta default
+  color quoted4 cyan default
+  color quoted5 green default
+  color quoted6 magenta default
+  color quoted7 cyan default
+
+# sidebar
+  color sidebar_new yellow default
