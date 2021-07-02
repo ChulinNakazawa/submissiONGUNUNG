@@ -38,4 +38,27 @@ import weechat as w
 import re
 
 SCRIPT_NAME = "bot2human"
-SCRIPT_AUTHOR =
+SCRIPT_AUTHOR = "Justin Wong & Hexchain & quietlynn"
+SCRIPT_DESC = "Replace IRC message nicknames with regex match from chat text"
+SCRIPT_VERSION = "0.3.0"
+SCRIPT_LICENSE = "GPLv3"
+
+DEFAULTS = {
+    'nick_re_count': '4',
+    'nick_content_re.0': r'\[(?:\x03[0-9,]+)?(?P<nick>[^:]+?)\x0f?\] (?P<text>.*)',
+    'nick_content_re.1': r'(?:\x03[0-9,]+)?\[(?P<nick>[^:]+?)\]\x0f? (?P<text>.*)',
+    'nick_content_re.2': r'\((?P<nick>[^:]+?)\) (?P<text>.*)',
+    'nick_content_re.3': r'<(?:\x03[0-9,]+)?(?P<nick>[^:]+?)\x0f?> (?P<text>.*)',
+    'bot_nicks': "",
+    'znc_ts_re': r'\[\d\d:\d\d:\d\d\]\s+',
+}
+
+CONFIG = {
+    'nick_re_count': -1,
+    'nick_content_res': [],
+    'bot_nicks': [],
+    'znc_ts_re': None,
+}
+
+
+def
