@@ -106,4 +106,28 @@ def filter_color(msg):
                     state = 'char'
                     yield x
 
-    return ''.join(char_ite
+    return ''.join(char_iter(msg))
+
+
+def msg_cb(data, modifier, modifier_data, string):
+    # w.prnt("blue", "test_msg_cb " + string)
+    parsed = w.info_get_hashtable("irc_message_parse", {'message': string})
+    # w.prnt("", "%s" % parsed)
+
+    matched = False
+    for bot in CONFIG['bot_nicks']:
+        # w.prnt("", "%s, %s" % (parsed["nick"], bot))
+        if parsed['nick'] == bot:
+            t = parsed.get(
+                'text',
+                parsed["arguments"][len(parsed["channel"])+2:]
+            )
+            # ZNC timestamp
+            ts = ""
+            mts = CONFIG['znc_ts_re'].match(t)
+            if mts:
+                ts = mts.group()
+                t = t[mts.end():]
+
+            for r in CONFIG['nick_content_res']:
+                # parsed['text'] only exist
