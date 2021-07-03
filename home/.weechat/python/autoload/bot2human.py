@@ -61,4 +61,24 @@ CONFIG = {
 }
 
 
-def
+def parse_config():
+
+    for option, default in DEFAULTS.items():
+        # print(option, w.config_get_plugin(option))
+        if not w.config_is_set_plugin(option):
+            w.config_set_plugin(option, default)
+
+    CONFIG['nick_re_count'] = int(w.config_get_plugin('nick_re_count'))
+    CONFIG['bot_nicks'] = w.config_get_plugin('bot_nicks').split(' ')
+    for i in range(CONFIG['nick_re_count']):
+        option = "nick_content_re.{}".format(i)
+        CONFIG['nick_content_res'].append(
+            re.compile(w.config_get_plugin(option))
+        )
+    CONFIG['znc_ts_re'] = re.compile(w.config_get_plugin('znc_ts_re'))
+
+
+def config_cb(data, option, value):
+    parse_config()
+
+    return 
