@@ -130,4 +130,22 @@ def msg_cb(data, modifier, modifier_data, string):
                 t = t[mts.end():]
 
             for r in CONFIG['nick_content_res']:
-                # parsed['text'] only exist
+                # parsed['text'] only exists in weechat version >= 1.3
+                m = r.match(t)
+                if not m:
+                    continue
+                nick, text = m.group('nick'), m.group('text')
+                nick = filter_color(nick)
+                nick = re.sub(r'\s', '_', nick)
+                parsed['host'] = parsed['host'].replace(bot, nick)
+                parsed['text'] = ts + text
+                matched = True
+                buffer = w.info_get("irc_buffer", "%s,%s" % (modifier_data, parsed['channel']))
+                add_nick(nick, buffer, "")
+                break
+            if matched:
+                break
+    else:
+        return string
+
+    return ":{host} {command} {channel} :{text}".format(**par
