@@ -25,4 +25,27 @@ def pastebin_process_cb(data, command, rc, out, err):
         else:
             w.prnt(buffer, str(process_output))
         process_output = ''
-    return w.WEEC
+    return w.WEECHAT_RC_OK
+
+
+def pastebin_cb(data, buffer, args):
+    '''Callback for /paste command'''
+    largs = args.split(' ')
+    while '' in largs:
+        largs.remove('')
+    while ' ' in largs:
+        largs.remove(' ')
+    if len(largs) == 0:
+        pass
+    else:
+        filename = largs[0]
+        if re.search(r'\.(bmp|jpe?g|gif|png|webp)$', filename):
+            cmd = 'curl -sF "name=@{}" http://img.vim-cn.com/'.format(filename)
+        else:
+            cmd = 'curl -sF "vimcn=<{}" http://cfp.vim-cn.com/'.format(filename)
+        buffers.append(buffer)
+        w.hook_process(cmd, TIMEOUT, pastebin_process_cb.__name__, '')
+    return w.WEECHAT_RC_OK
+
+
+if w.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
