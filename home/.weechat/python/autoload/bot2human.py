@@ -169,4 +169,18 @@ def nicklist_nick_added_cb(data, signal, buffer):
     return w.WEECHAT_RC_OK
 
 if __name__ == '__main__':
-    w.register(SCRIPT_NAME, SCRIPT_
+    w.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
+               SCRIPT_DESC, "", "")
+
+    parse_config()
+
+    w.hook_modifier("irc_in_privmsg", "msg_cb", "")
+    w.hook_config("plugins.var.python."+SCRIPT_NAME+".*", "config_cb", "")
+    
+    # Glowing Bear will choke if a nick is added into a newly created group.
+    # As a workaround, we add the group as soon as possible BEFORE Glowing Bear loads groups,
+    # and we must do that AFTER EVERY nicklist reload. nicklist_nick_added satisfies both.
+    # TODO(quietlynn): Find better signals to hook instead.
+    w.hook_signal("nicklist_nick_added", "nicklist_nick_added_cb", "")
+
+# vim: ts=4 sw=4 sts=4 expandtab
