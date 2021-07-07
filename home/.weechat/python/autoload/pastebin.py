@@ -49,3 +49,10 @@ def pastebin_cb(data, buffer, args):
 
 
 if w.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
+              SCRIPT_DESC, '', ''):
+    w.hook_command('paste',
+                   'Send the pastebin/imagebin URL of a local file to the current buffer',
+                   '<file>',
+                   '',
+                   '',
+                   pastebin_cb.__name__, '')
