@@ -45,4 +45,18 @@ def print_cb(data, buffer, date, tags, displayed, highlight, prefix, message):
     if (is_private or CONFIG['show_highlight'] == 'on' and highlight == 1) and \
             (buffer not in last or time.time() - last[buffer] > CONFIG['rate_limit']) and \
             not w.buffer_match_list(buffer, CONFIG['blacklist']):
-        parsed = w.info_get_hashtable('irc_message_parse'
+        parsed = w.info_get_hashtable('irc_message_parse', {'message': message})
+        try:
+            body = '<{}> {}'.format(prefix, message)
+            if not is_private:
+                body = '[{}] {}'.format(w.buffer_get_string(buffer, 'short_name'), body)
+            data = json.dumps({
+                'type': 'note',
+                'title': 'weechat',
+                'body': body,
+            })
+            if CONFIG['access_token']:
+                #w.prnt(buffer, '{}'.format(body))
+                urllib2.urlopen(urllib2.Request('https://api.pushbullet.com/v2/pushes', data=data, headers={'Access-Token': CONFIG['access_token'], 'Content-type': 'application/json'}))
+            else:
+                w.prnt('', 'Please get an Access Token at 
