@@ -29,4 +29,20 @@ def parse_config():
             w.config_set_plugin(option, default)
         w.config_set_desc_plugin(option, '{} (default: {!r})'.format(desc, default))
     CONFIG['rate_limit'] = int(w.config_get_plugin('rate_limit'))
-    for i in ('access_token', '
+    for i in ('access_token', 'blacklist', 'show_highlight'):
+        CONFIG[i] = w.config_get_plugin(i)
+    return w.WEECHAT_RC_OK
+
+
+def config_cb(data, option, value):
+    parse_config()
+    return w.WEECHAT_RC_OK
+
+
+def print_cb(data, buffer, date, tags, displayed, highlight, prefix, message):
+    global last
+    is_private = w.buffer_get_string(buffer, 'localvar_type') == 'private'
+    if (is_private or CONFIG['show_highlight'] == 'on' and highlight == 1) and \
+            (buffer not in last or time.time() - last[buffer] > CONFIG['rate_limit']) and \
+            not w.buffer_match_list(buffer, CONFIG['blacklist']):
+        parsed = w.info_get_hashtable('irc_message_parse'
