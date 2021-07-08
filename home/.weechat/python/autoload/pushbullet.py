@@ -59,4 +59,24 @@ def print_cb(data, buffer, date, tags, displayed, highlight, prefix, message):
                 #w.prnt(buffer, '{}'.format(body))
                 urllib2.urlopen(urllib2.Request('https://api.pushbullet.com/v2/pushes', data=data, headers={'Access-Token': CONFIG['access_token'], 'Content-type': 'application/json'}))
             else:
-                w.prnt('', 'Please get an Access Token at 
+                w.prnt('', 'Please get an Access Token at https://www.pushbullet.com/#settings/account and /set plugins.var.python.'+SCRIPT_NAME+'.access_token')
+        except:
+            return w.WEECHAT_RC_ERROR
+        else:
+            last[buffer] = time.time()
+    return w.WEECHAT_RC_OK
+
+
+def mark_read_cb(_data, _signal, _signal_data):
+    buffer = w.buffer_get_string(w.current_buffer(), 'name')
+    last[buffer] = time.time()
+    return w.WEECHAT_RC_OK
+
+
+if __name__ == '__main__':
+    w.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
+               SCRIPT_DESC, '', '')
+    parse_config()
+    w.hook_config('plugins.var.python.'+SCRIPT_NAME+'.*', 'config_cb', '')
+    w.hook_print('', 'notify_private,notify_highlight', '', 1, 'print_cb', '')
+    w.hook_signal('
