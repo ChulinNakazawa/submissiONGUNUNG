@@ -79,4 +79,5 @@ if __name__ == '__main__':
     parse_config()
     w.hook_config('plugins.var.python.'+SCRIPT_NAME+'.*', 'config_cb', '')
     w.hook_print('', 'notify_private,notify_highlight', '', 1, 'print_cb', '')
-    w.hook_signal('
+    w.hook_signal('*,irc_out1_privmsg', 'mark_read_cb', '')
+    w.hook_signal('buffer_switch', 'mark_read_cb', '')
