@@ -18,4 +18,15 @@
 # the 'files:' directive indicates the start of a new 'files:' block. it must
 # be followed by a whitespace-separated list of file regexps to match this
 # config. of course, you could put all the regexps in one and separate them
-#
+# with |, but this syntax is a little more pleasant, and i combine them anyway
+# as i read the file. the token "stdin" is special and indicates that this
+# config may  be used to color standard input. it is not a regexp, and regexps
+# that match stdin (e.g., /stdin.*/) will not cause a config to be used for
+# standard input.  the token "default" is treated similarly, but causes that
+# config to be used when no other config matches (see below).
+files: stdin
+###files: stdin /stdout\.log/
+   # an optional block of regexps to use for pre-color filtering. they are 
+   # applied in order, so bear in mind that later regexps are applied to the 
+   # output of earlier ones. the second part is substituted for the first 
+   
