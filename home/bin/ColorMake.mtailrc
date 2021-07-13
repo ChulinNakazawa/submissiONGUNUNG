@@ -5,4 +5,17 @@
 # the format of this config file is pretty straightforward, and pretty concise.
 # this sample is long and ugly only because it is copiously commented. comments
 # must be on their own line. whitespace (apart from newlines) is ignored.  all
-# regexps in this sample file use '/' as the separator, but an
+# regexps in this sample file use '/' as the separator, but any non-whitespace
+# and non-alphanumeric character will do... to embed the separator in the
+# regexp, escape it with a backslash. apart from that, regular expressions are
+# as in python.
+#
+# the file consists of zero or more 'files:' blocks interleaved with zero or
+# more 'ansi:' blocks. order of 'files:' blocks is important (first block with
+# a matching regexp is used) while order of 'ansi:' blocks is irrelevant: they
+# are treated as if they were defined as one at the top of the file.
+
+# the 'files:' directive indicates the start of a new 'files:' block. it must
+# be followed by a whitespace-separated list of file regexps to match this
+# config. of course, you could put all the regexps in one and separate them
+#
