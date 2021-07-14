@@ -29,4 +29,15 @@ files: stdin
    # an optional block of regexps to use for pre-color filtering. they are 
    # applied in order, so bear in mind that later regexps are applied to the 
    # output of earlier ones. the second part is substituted for the first 
-   
+   # part. you can use \1, \2, and so on to refer to groups.
+   filters:
+###      /continuum/c0nTiNuUm/
+   # an optional block of regexps and associated colors. they are matched in 
+   # order, with later matches coloring over earlier ones. expressions should 
+   # have 0 or 1 groups... if an expression has zero groups, the whole match 
+   # is colored, if it has one group, only the portion of the line matching 
+   # the group is colored. this is a very simple-minded coloring system, and 
+   # should probably be improved.
+   # an unrecognized color name causes that line to be ignored.
+   # built-in color names are: black, red, green, yellow, blue, magenta, cyan,
+   #    white, brightblack, brightred, brightgreen, 
