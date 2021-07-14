@@ -40,4 +40,25 @@ files: stdin
    # should probably be improved.
    # an unrecognized color name causes that line to be ignored.
    # built-in color names are: black, red, green, yellow, blue, magenta, cyan,
-   #    white, brightblack, brightred, brightgreen, 
+   #    white, brightblack, brightred, brightgreen, brightyellow, brightblue,
+   #    brightmagenta, and brightcyan.
+   colors:
+      /^.*$/ white
+      /^make.*:.*$/    brightblue
+      /^make.*:.* Error [0-9]*$/    brightred
+      /[ \t]-o [^ ]*/           cyan
+      /.*: In function .*/ brightred
+      /[A-Za-z0-9._]*:[0-9]*: .*/ brightred
+	/\(.*\)/ white
+      /`[^ ]*'/    green
+      /^.*[Ww]arning.*$/       brightyellow
+#      /.*[Ee]rror.*/         brightred
+      /:[0-9]*:/ brightwhite
+
+# a simple config to use for everything not covered above. if no default
+# config is given, the default defaults to empty (no colors, no filters).
+###files: default
+###   colors:
+###      /^.*$/             brightblack
+
+# if you really want to 
