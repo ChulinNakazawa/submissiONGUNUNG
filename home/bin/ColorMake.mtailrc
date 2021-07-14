@@ -61,4 +61,15 @@ files: stdin
 ###   colors:
 ###      /^.*$/             brightblack
 
-# if you really want to 
+# if you really want to override or extend the ansi escape sequences used, you
+# can do so like this. an 'ansi:' block terminates a 'files:' block. it may
+# appear before, between, or after any 'files:' blocks, and multiple ansi
+# blocks will be concatenated and processed as one big one. if the same name
+# is assigned multiple times, the last one is used. be aware than not all 
+# ansi attributes are supported on all terminals. for instance, on my linux
+# machine, blink (as in the following) works on the console, but not in an
+# an xterm. also, be aware that you could really shoot yourself in the foot by
+# setting the ansi sequences to key-remapping codes or something.
+#
+# note that you could also use this functionality to change the entire 
+# behavior of mtail, pr
