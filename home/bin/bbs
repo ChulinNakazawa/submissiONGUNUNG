@@ -1,0 +1,4 @@
+#!/bin/sh
+# -*- tcl -*- \
+exec tclsh "$0" "$@"
+package require Exp

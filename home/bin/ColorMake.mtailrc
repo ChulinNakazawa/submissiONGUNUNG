@@ -72,4 +72,9 @@ files: stdin
 # setting the ansi sequences to key-remapping codes or something.
 #
 # note that you could also use this functionality to change the entire 
-# behavior of mtail, pr
+# behavior of mtail, printing out, e.g., html font tags instead of ansi 
+# sequences. in that usage, it will help to know that the name "reset" is
+# used for the sequence which terminates a block of colored text, and can
+# also be overridden. by default, it is set to "[0m".
+ansi: 
+	/brightredblink/[5;1;31m/
