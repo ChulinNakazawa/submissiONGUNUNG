@@ -1,4 +1,27 @@
 #!/bin/sh
 # -*- tcl -*- \
 exec tclsh "$0" "$@"
-package require Exp
+package require Expect
+
+trap {
+  set rows [stty rows]
+  set cols [stty columns]
+  stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+
+spawn luit -encoding gbk ssh -2 -p22 yaray@bbs.net9.org
+set fp [open ~/Sed/bbs]
+set password [read -nonewline $fp]
+close $fp
+expect {
+  "password:" { send "$password\r"; exp_continue }
+  -re "酸甜苦辣板|欢迎光临|上次连线时间|欢迎关注|今天夜间|本日十大衷心祝福" { send "\r"; exp_continue }
+  "主选单" { send "f\r" }
+}
+interact {
+  -o
+  # menu move down
+  #-re {\033\[\d+;28H\033\[44m } { send_user $interact_out(0,string); send_user "\010" }
+  #-re {\033\[\d+D\010\010\033\[44m  } { send_user $interact_out(0,string); send_user " "}
+  ## menu move up
+  #-re {\033\[\d+A\0
