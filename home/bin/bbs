@@ -24,4 +24,13 @@ interact {
   #-re {\033\[\d+;28H\033\[44m } { send_user $interact_out(0,string); send_user "\010" }
   #-re {\033\[\d+D\010\010\033\[44m  } { send_user $interact_out(0,string); send_user " "}
   ## menu move up
-  #-re {\033\[\d+A\0
+  #-re {\033\[\d+A\010\010 } { send_user [string range $interact_out(0,string) 0 end]; send_user "\010" }
+  #-re {\033\[44m   ◆} { send_user [string range $interact_out(0,string) 0 end-1]; send_user " "; send_user [string index $interact_out(0,string) end] }
+  # 主选单
+  #-re {\015\│ ◆} { send_user [string range $interact_out(0,string) 0 end-1]; send_user " "; send_user [string index $interact_out(0,string) end] }
+  #-re {\033\[\d+;4H\033\[m } { send_user $interact_out(0,string); send_user "\010" }
+  # 讨论区选单
+  #-re {(\033\[K\033\[\d+;)7H} { send_user $interact_out(1,string)6H }
+  ## 分类讨论区
+  #-re {\033\[\d+;23H\033\[m } { send_user $interact_out(0,string); send_user "\010"}
+  #-re {\033\[\d+;23H } { send_user 
