@@ -33,4 +33,10 @@ interact {
   #-re {(\033\[K\033\[\d+;)7H} { send_user $interact_out(1,string)6H }
   ## 分类讨论区
   #-re {\033\[\d+;23H\033\[m } { send_user $interact_out(0,string); send_user "\010"}
-  #-re {\033\[\d+;23H } { send_user 
+  #-re {\033\[\d+;23H } { send_user $interact_out(0,string); send_user "\010"}
+  #-re {\033\[16C\│  ◆} { send_user [string range $interact_out(0,string) 0 end-1]; send_user " "; send_user [string index $interact_out(0,string) end] }
+  #-nobuffer "离开本BBS站" { send "\r\r" }
+  -re {\033\[37m] 离开本BBS站} { send "\r\r" }
+  -re {\033\[m9#BBS  竭  诚} { send "\r"; close; break }
+  "Shared connection to bbs.net9.org closed." exit
+}
