@@ -3,4 +3,20 @@
 display() {
   hh=$(xrandr | awk '{sub(",","",$10);print $10;exit}')
   h=200
-  dzen2 -p 1 -y $[(hh-h)/2] -h $h -fn "-*-dejavu sans-*-
+  dzen2 -p 1 -y $[(hh-h)/2] -h $h -fn "-*-dejavu sans-*-*-*-*-$h-*-*-*-*-*-*-*" <<< $1
+}
+
+volume() {
+  display "Volume: $(amixer set Master $1 | grep -oPm1 '\d+(?=%)')"
+}
+
+case "$1" in
+  u|up)
+    volume 4%+;;
+  d|down)
+    volume 4%-;;
+  t|toggle)
+    display "Sound: $(amixer set Master toggle | grep -oPm1 '(?<=\[)(on|off)(?=\])')";;
+  *)
+    exit 1;;
+esac
