@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+# Generate .in/.out test cases from Codeforces Examples
+# codeforces -u http://codeforces.com/contest/.../problem/A A
+# codeforces -u http://codeforces.com/contest/.../problem/B B
+# codeforces C < C.html
+from argparse import ArgumentParser
+from pyquery import PyQuery as pq
+import os, re, sys, urllib.request
+
+
+def dump(options, case, input, output):
+    name = options.name[0]
+    with open(os.path.join(options.path, '{}.{}.in'.format(
+            name, case)), 'w') as f:
+        for l in input:
+           
