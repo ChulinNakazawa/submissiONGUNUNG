@@ -13,4 +13,27 @@ def dump(options, case, input, output):
     with open(os.path.join(options.path, '{}.{}.in'.format(
             name, case)), 'w') as f:
         for l in input:
-           
+            f.write(l)
+            f.write('\n')
+    with open(os.path.join(options.path, '{}.{}.out'.format(
+            name, case)), 'w') as f:
+        for l in output:
+            f.write(l)
+            f.write('\n')
+
+
+def main():
+    ap = ArgumentParser(description='Generate .in/.out test cases from Codeforces Examples')
+    ap.add_argument('-p', '--path', default='.')
+    ap.add_argument('-u', '--url')
+    ap.add_argument('name', nargs=1, help='Problem name')
+    options = ap.parse_args()
+    state = 0
+    case = 0
+    input, output = [], []
+
+    if options.url:
+        with urllib.request.urlopen(options.url) as r:
+            data = r.read()
+            doc = pq(data)
+            e = doc
