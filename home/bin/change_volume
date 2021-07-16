@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+display() {
+  hh=$(xrandr | awk '{sub(",","",$10);print $10;exit}')
+  h=200
+  dzen2 -p 1 -y $[(hh-h)/2] -h $h -fn "-*-dejavu sans-*-
