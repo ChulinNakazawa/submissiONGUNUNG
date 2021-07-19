@@ -36,4 +36,23 @@ def main():
         with urllib.request.urlopen(options.url) as r:
             data = r.read()
             doc = pq(data)
-            e = doc
+            e = doc('.sample-test')
+            inpre = e('.input > pre')
+            outpre = e('.output > pre')
+            assert len(inpre) == len(outpre)
+            for inpre, outpre in zip(inpre, outpre):
+                input = [inpre.text.rstrip()]
+                for br in inpre:
+                    if br.tail is not None:
+                        input.append(br.tail.rstrip())
+                output = [outpre.text.rstrip()]
+                for br in outpre:
+                    if br.tail is not None:
+                        output.append(br.tail.rstrip())
+                dump(options, case, input, output)
+                case += 1
+
+    else:
+        data = sys.stdin.read()
+        for line in data.splitlines():
+            if s
