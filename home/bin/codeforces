@@ -55,4 +55,25 @@ def main():
     else:
         data = sys.stdin.read()
         for line in data.splitlines():
-            if s
+            if state == 0:
+                if line == 'Examples':
+                    state = 1
+            elif state == 1:
+                if line == 'input':
+                    state = 2
+            elif state == 2:
+                if not line:
+                    state = 0
+                elif line == 'output':
+                    state = 3
+                else:
+                    input.append(line.rstrip())
+            else:
+                if re.match(r'(Note|)$', line):
+                    state = 0
+                elif line == 'input':
+                    state = 2
+                else:
+                    output.append(line.rstrip())
+                if state != 3:
+                    dump(options, case, i
