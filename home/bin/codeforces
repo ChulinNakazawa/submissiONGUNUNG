@@ -76,4 +76,11 @@ def main():
                 else:
                     output.append(line.rstrip())
                 if state != 3:
-                    dump(options, case, i
+                    dump(options, case, input, output)
+                    case += 1
+                    input.clear()
+                    output.clear()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
