@@ -17,4 +17,20 @@ to_pinyin = ->s {
 
 # Google CSV
 ## remove/rename columns
-google = CSV.read(ARGV[0] || '/tmp/google.csv', encoding: 'bom|utf-16').map {|l| l.map {|c| c and c.en
+google = CSV.read(ARGV[0] || '/tmp/google.csv', encoding: 'bom|utf-16').map {|l| l.map {|c| c and c.encode 'utf-8' } }.transpose
+google.reject! {|x| x[0] =~ /Prefix|Suffix|Given|Family|Type|Organization|IM/ || x[0] =~ /Address/ && x[0] !~ /Formatted/ }
+google.each {|x|
+  x[0].gsub!(/(\S+) \d - Value/) { $1.gsub('-', '') }
+  x[0].gsub! /Address.*/, 'Address'
+  x[0].gsub! /Additional Name/, 'Alias'
+}
+google = google.transpose
+
+## filter records with Name & Email fields
+email_idx = google[0].each_index.select {|i| google[0][i] =~ /Email/ }
+google = google.select {|x| x[0] && x.values_at(*email_idx).any? } # Name is empty
+google.reject! {|x| x.values_at(*email_idx).grep(/no-reply/).size > 0 } # Email: no-reply@...
+
+## generate pinyin Alias from Name
+google[1..-1].each {|x|
+  
