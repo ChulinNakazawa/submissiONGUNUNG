@@ -20,4 +20,22 @@ for row in c.execute('select * from moz_cookies where baseDomain = "qq.com" and 
     id, baseDomain, originAttributes, name, value, host, path, expiry, lastAccessed, creationTime, isSecure, isHttpOnly, appId, inBrowserElement = row
     if now < expiry:
         with chrome:
-            chrome.e
+            chrome.execute('insert into cookies values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (
+                creationTime - ldap_epoch,
+                host,
+                name,
+                value,
+                path,
+                expiry*1000000 - ldap_epoch,
+                isSecure,
+                isHttpOnly,
+                lastAccessed - ldap_epoch,
+                1,
+                1,
+                1,
+                '',
+                0
+            ))
+
+# Firefox cookies
+#CREATE TABLE moz_cookies (id INTEGER PRIMARY KEY, baseDomain TEXT, originAttributes TEXT NOT NULL DEFAULT '', name TEXT, value TEXT, host TEXT, path TEXT, expiry INTEGER, lastAccessed INTEGER, creationTime INTEGER, i
