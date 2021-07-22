@@ -1,0 +1,28 @@
+
+#!/bin/zsh
+d=/tmp/exp-rootfs
+bind=(/dev /tmp)
+env=(DISPLAY=$DISPLAY LANG=$LANG)
+
+while getopts d opt; do
+  case $opt in
+    d)
+      read -r "delete?umount -R $d? (y/n) "
+      if [[ $delete == y ]]; then
+        sudo umount -R $d
+        rmdir $d
+        echo Deleted
+      fi
+      exit
+      ;;
+    \?)
+      exit 1
+      ;;
+  esac
+done
+
+mkdir -p $d
+mkdir -p /tmp/overlay/{home,root}/{up,work}
+mountpoint -q $d || sudo mount -t overlay -o lowerdir=/,upperdir=/tmp/overlay/root/up,workdir=/tmp/overlay/root/work overlayfs $d
+mountpoint -q $d/home || sudo mount -t overlay -o lowerdir=/home,upperdir=/tmp/overlay/home/up,workdir=/tmp/overlay/home/work overlayfs $d/home
+if [[ -n $TMUX ]]; then
