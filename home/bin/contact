@@ -33,4 +33,34 @@ google.reject! {|x| x.values_at(*email_idx).grep(/no-reply/).size > 0 } # Email:
 
 ## generate pinyin Alias from Name
 google[1..-1].each {|x|
-  
+  begin
+    x[1] = to_pinyin[x[0]]
+  rescue
+  end
+}
+
+# Mutt aliases
+File.open(File.expand_path('~/.mutt/aliases'), 'w') {|h|
+  google[1..-1].each {|x|
+    email_idx.each_with_index {|i,j|
+      h.puts "alias #{x[1]}#{j>0 ? j : ''} #{x[0]} <#{x[i]}>" if x[i]
+    }
+  }
+}
+
+# contacts.rec
+File.open(File.expand_path('~/.mutt/contacts.rec'), 'w') {|rec|
+  rec.write <<EOF
+%rec: Contacts
+%key: Name
+%typedef: Email email
+
+EOF
+
+  abooks, aliases = [], []
+  IO.popen('csv2rec -e', 'r+') {|h|
+    h.write CSV.generate {|csv| google.each {|x| csv << x } }
+    h.close_write
+    rec.puts h.read
+  }
+}
