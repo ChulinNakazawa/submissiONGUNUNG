@@ -2,4 +2,22 @@
 import os, sqlite3, sys, time
 
 #wxuin wxsid webwx_data_ticket
-if os.system('rsync -a linode-ca:/home/ray/.mozilla/firefo
+if os.system('rsync -a linode-ca:/home/ray/.mozilla/firefox/5psswi97.default/cookies.sqlite /tmp/'):
+    sys.exit(1)
+
+firefox = sqlite3.connect('/tmp/cookies.sqlite')
+chrome = sqlite3.connect('/home/ray/.config/google-chrome/Default/Cookies')
+
+ldap_epoch = -11644473600*1000000
+
+now = time.time()
+
+with chrome:
+    chrome.execute('delete from cookies where host_key like "%qq.com"')
+
+c = firefox.cursor()
+for row in c.execute('select * from moz_cookies where baseDomain = "qq.com" and name in ("wxuin","wxsid","webwx_data_ticket")'):
+    id, baseDomain, originAttributes, name, value, host, path, expiry, lastAccessed, creationTime, isSecure, isHttpOnly, appId, inBrowserElement = row
+    if now < expiry:
+        with chrome:
+            chrome.e
