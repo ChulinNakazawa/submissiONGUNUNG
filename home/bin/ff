@@ -17,4 +17,23 @@ def main():
         args.run = args.debug
 
     home = os.path.expanduser('~')
- 
+    build_dir = '/tmp/Rel' if args.release else '/tmp/Debug'
+    os.environ["PATH"] = os.path.expanduser(build_dir + '/bin') + os.pathsep + os.environ['PATH']
+
+    # GNU binutils
+    if args.binutils:
+        del sys.argv[1]
+        os.environ["PATH"] = os.path.expanduser('~/Dev/binutils-gdb/out/release/ld') + os.pathsep + os.environ['PATH']
+
+    cwd = os.getcwd()
+    fname = os.path.realpath(args.file)
+    tmp = os.path.join(os.path.dirname(fname), 'a')
+    dirname = os.path.dirname(fname).replace(home, '$HOME')
+    cmd_idx = 0
+    last = ''
+    try:
+       fh = open(fname)
+    except FileNotFoundError:
+        print('not exist', file=sys.stderr)
+        return
+    substs = so
