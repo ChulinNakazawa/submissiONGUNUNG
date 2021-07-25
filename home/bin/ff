@@ -48,4 +48,24 @@ def main():
         ('p', lambda: os.path.relpath(dirname, cwd)),
         ('python', lambda: 'python3'),
         ('run', lambda: ''),
-        ('s', lambda: os.p
+        ('s', lambda: os.path.relpath(fname, cwd)),
+        ('S', lambda: os.path.relpath(dirname, cwd)),
+        ('t', lambda: os.path.relpath(tmp, cwd)),
+    ], key=lambda x: -len(x[0]))
+
+    with fh as f:
+        for line in f.readlines():
+            line = line.strip()
+            match = re.search(r'RUN:[ \t]', line)
+            if not match:
+                last = ''
+                continue
+            line = line[match.end():]
+            if line[-1] == '\\':
+                last += line[:-1]
+                continue
+            line = last + line
+            last = ''
+
+            if 'rm ' in line and ('..' in line or (not re.search(r'rm (-f|-fr|-rf) %t', line))):
+                continu
