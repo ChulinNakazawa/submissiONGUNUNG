@@ -91,4 +91,19 @@ def main():
             if args.run == cmd_idx:
                 if (idx := line.find('|')) >= 0:
                     line = line[:idx]
-       
+                line = f'{build_dir}/bin/{line}'
+                if args.debug >= 0:
+                    line = 'rr record ' + line
+                print(f'### {line}')
+                if not args.n:
+                    os.system(line)
+                    if args.debug >= 0:
+                        os.execvp('rr', ('rr', 'replay', '-d', 'cgdb'))
+                break
+
+            if match := re.search(r'\bcd ([/.\w]+)', line):
+                os.chdir(match.group(1))
+                cwd = os.getcwd()
+            cmd_idx += 1
+
+main()
