@@ -68,4 +68,27 @@ def main():
             last = ''
 
             if 'rm ' in line and ('..' in line or (not re.search(r'rm (-f|-fr|-rf) %t', line))):
-                continu
+                continue
+
+            line1 = ''
+            idx = 0
+            while (idx1 := line.find('%', idx)) != -1:
+                line1 += line[idx:idx1]
+                idx = idx1+1
+                for s in substs:
+                    if line[idx:].startswith(s[0]):
+                        line1 += s[1]()
+                        idx += len(s[0])
+                        break
+                else:
+                    line1 += line[idx-1]
+            line = line1 + line[idx:]
+
+            if args.run < 0:
+                print(f'{cmd_idx:^2} {line}')
+            if not args.n:
+                os.system(line)
+            if args.run == cmd_idx:
+                if (idx := line.find('|')) >= 0:
+                    line = line[:idx]
+       
