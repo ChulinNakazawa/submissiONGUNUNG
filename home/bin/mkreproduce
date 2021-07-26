@@ -1,0 +1,13 @@
+#!/bin/zsh
+dry_run=
+if [[ $1 == --dry-run ]]; then dry_run=1; shift; fi
+
+f() {
+  for f in $1/*(ND.^x); do
+    [[ ${f##*/} =~ '^\.' ]] && continue
+    if [[ -n $dry_run ]]; then
+      echo $f
+    elif [[ $(wc -l < $f) == 1 ]]; then
+      echo "echo '$(<$f)' > $f"
+    else
+      if [[ ${f##*/} == Makefile ]]; t

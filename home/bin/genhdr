@@ -168,3 +168,54 @@ end
 for x in typedefs_use.to_a.sort
   out << typedefs[x]
 end
+
+# functions
+out << '' if ! out.empty? && ! idents.empty?
+
+if idents_use.member? 'ri'
+  out.push << "int ri() {
+  int m = 0, s = 0; unsigned c;
+  while ((c = getchar())-'0' >= 10u) m = c == '-';
+  for (; c-'0' < 10u; c = getchar()) s = s*10+c-'0';
+  return m ? -s : s;
+}
+"
+end
+
+if idents_use.member? 'rl'
+  out.push << %{long rl() {
+  long x;
+  scanf(#{idents_use.member?('PRId64') ? '"%" SCNd64' : ARGV.empty? ? '"%ld"' : '"%lld"'}, &x);
+  return x;
+}
+}
+end
+
+if idents_use.member? 'read'
+  out.push << %{template <class T>
+char read(T &s) {
+  int m = 0, c;
+  s = 0;
+  while ((c = getchar())-'0' >= 10u) m = c == '-';
+  for (; c-'0' < 10u; c = getchar()) s = s*10+c-'0';
+  if (m) s = -s;
+  return c;
+}
+}
+end
+
+if idents_use.member? 'rd'
+  out.push << 'double rd() {
+  double x;
+  scanf("%lf", &x);
+  return x;
+}
+'
+end
+
+for x in out
+  print x, "\n"
+end
+for x in body
+  print x, "\n"
+end
