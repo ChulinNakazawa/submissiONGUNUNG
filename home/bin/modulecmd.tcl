@@ -1882,3 +1882,730 @@ proc findExecutable {cmd} {
 
 proc reverseList {list} {
     set newlist {}
+
+    foreach item $list {
+	set newlist [linsert $newlist 0 $item]
+    }
+    return $newlist
+}
+
+proc replaceFromList {list1 item {item2 {}}} {
+     set xi [lsearch -exact $list1 $item]
+
+     while {$xi >= 0} {
+	 if {[string length $item2] == 0} {
+             set list1 [lreplace $list1 $xi $xi]
+         } else {
+             set list1 [lreplace $list1 $xi $xi $item2]
+         }
+         set xi [lsearch -exact $list1 $item]
+     }
+
+     return $list1
+}
+
+proc checkValidModule {modfile} {
+    global g_debug
+
+    if {$g_debug} {
+	report "DEBUG checkValidModule: $modfile"
+    }
+
+    # Check for valid module
+    if {![catch {open $modfile r} fileId]} {
+	gets $fileId first_line
+	close $fileId
+	if {[string first "\#%Module" $first_line] == 0} {
+	    return 1
+	}
+    }
+    return 0
+}
+
+# If given module maps to default or other version aliases, a list of 
+# those aliases is returned.  This takes the full path to a module as
+# an argument.
+proc getVersAliasList {modulename} {
+    global g_versionHash g_moduleDefault g_debug
+
+    if {$g_debug} {
+	report "DEBUG getVersAliasList: $modulename"
+    }
+
+    set modparent [file dirname $modulename]
+
+    set tag_list {}
+    if {[info exists g_versionHash($modulename)]} {
+	# remove module basenames to get just version names
+	foreach version $g_versionHash($modulename) {
+	    set alias_tag [file tail $version]
+	    set tag_list [linsert $tag_list end $alias_tag]
+	}
+    }
+    if {[info exists g_moduleDefault($modparent)]} {
+	set tmp_name "$modparent/$g_moduleDefault($modparent)"
+	if {$tmp_name == $modulename} {
+	    set tag_list [linsert $tag_list end "default"]
+	}
+    }
+    return $tag_list
+}
+
+# Finds all module versions for mod in the module path dir
+proc listModules {dir mod {full_path 1} {sort_order {-dictionary}}\
+		  {flag_default_mf {1}} {flag_default_dir {1}}} {
+    global ignoreDir
+    global ModulesCurrentModulefile
+    global g_debug
+    global tcl_platform
+    global g_versionHash
+
+    # On Cygwin, glob may change the $dir path if there are symlinks involved
+    # So it is safest to reglob the $dir.
+    # example:
+    # [glob /home/stuff] -> "//homeserver/users0/stuff"
+
+    set dir [glob $dir]
+    set full_list [glob -nocomplain "$dir/$mod"]
+
+    # remove trailing / needed on some platforms
+    regsub {\/$} $full_list {} full_list
+	
+    set clean_list {}
+    set ModulesVersion {}
+    for {set i 0} {$i < [llength $full_list]} {incr i 1} {
+	set element [lindex $full_list $i]
+	set tag_list {}
+
+	# Cygwin TCL likes to append ".lnk" to the end of symbolic links.
+	# This is not necessary and pollutes the module names, so let's
+	# trim it off.
+	if { [isWin] } {
+	    regsub {\.lnk$} $element {} element
+	}
+
+	set tail [file tail $element]
+	set direlem [file dirname $element]
+
+	set sstart [expr {[string length $dir] +1}]
+	set modulename [string range $element $sstart end]
+
+
+	if {[file isdirectory $element] && [file readable $element]} {
+	    set ModulesVersion ""
+
+	    if {$g_debug} {
+		report "DEBUG listModules: found $element"
+	    }
+
+	    if {![info exists ignoreDir($tail)]} {
+		# include .modulerc or if not present .version file
+		if {[file readable $element/.modulerc]} {
+		    lappend full_list $element/.modulerc
+		}\
+		elseif {[file readable $element/.version]} {
+		    lappend full_list $element/.version
+		}
+		# Add each element in the current directory to the list
+		foreach f [glob -nocomplain "$element/*"] {
+		    lappend full_list $f
+		}
+
+		# if element is directory AND default or a version alias, add\
+		  it to the list
+		set tag_list [getVersAliasList $element]
+
+		set tag {}
+		if {[llength $tag_list]} {
+		    append tag "(" [join $tag_list ":"] ")"
+
+		    if {$full_path} {
+			set mystr ${element}
+		    } else {
+			set mystr ${modulename}
+		    }
+		    if {[file isdirectory ${element}]} {
+			if {$flag_default_dir} {
+			    set mystr "$mystr$tag"
+			}
+		    }\
+		    elseif {$flag_default_mf} {
+			set mystr "$mystr$tag"
+		    }
+		    lappend clean_list $mystr
+
+		}
+
+	    }
+	} else {
+	    if {$g_debug} {
+		report "DEBUG listModules: checking $element ($modulename)\
+		  dir=$flag_default_dir mf=$flag_default_mf"
+	    }
+	    switch -glob -- $tail {
+	    {.modulerc} {
+		    if {$flag_default_dir || $flag_default_mf} {
+			# set is needed for execute-modulerc
+			set ModulesCurrentModulefile $element
+			execute-modulerc $element
+		    }
+		}
+	    {.version} {
+		    if {$flag_default_dir || $flag_default_mf} {
+			# set is needed for execute-modulerc
+			set ModulesCurrentModulefile $element
+			execute-modulerc "$element"
+
+			if {$g_debug} {
+			    report "DEBUG listModules: checking default\
+			      $element"
+			}
+		    }
+		}
+	    {.*} -
+	    {*~} -
+	    {*,v} -
+	    {\#*\#} { }
+	    default {
+		    if {[checkValidModule $element]} {
+
+			set tag_list [getVersAliasList $element]
+
+			set tag {}
+			if {[llength $tag_list]} {
+			    append tag "(" [join $tag_list ":"] ")"
+			}
+			if {$full_path} {
+			    set mystr ${element}
+			} else {
+			    set mystr ${modulename}
+			}
+			if {[file isdirectory ${element}]} {
+			    if {$flag_default_dir} {
+				set mystr "$mystr$tag"
+			    }
+			}\
+			elseif {$flag_default_mf} {
+			    set mystr "$mystr$tag"
+			}
+			lappend clean_list $mystr
+		    }
+		}
+	    }
+	}
+    }
+    if {$sort_order != {}} {
+	set clean_list [lsort $sort_order $clean_list]
+    }
+    if {$g_debug} {
+	report "DEBUG listModules: Returning $clean_list"
+    }
+
+    return $clean_list
+}
+
+
+proc showModulePath {{separator {}}} {
+    global env g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG showModulePath: $separator"
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+    if {[info exists env(MODULEPATH)]} {
+	report "Search path for module files (in search order):"
+	foreach path [split $env(MODULEPATH) $separator] {
+	    report "  $path"
+
+	}
+    } else {
+	reportWarning "WARNING: no directories on module search path"
+    }
+
+}
+
+########################################################################
+# command line commands
+
+proc cmdModuleList {{separator {}}} {
+    global env DEF_COLUMNS show_oneperline show_modtimes g_debug
+    global g_def_separator
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    if {[info exists env(LOADEDMODULES)]} {
+        set loaded $env(LOADEDMODULES)
+    } else {
+        set loaded ""
+    }
+
+    if { [string length $loaded] == 0} { 
+        report "No Modulefiles Currently Loaded."
+    } else {
+        set list {}
+        report "Currently Loaded Modulefiles:"
+        set max 0
+
+        foreach mod [split $loaded $separator] {
+            set len [string length $mod]
+
+            if {$len > 0} {
+	
+	        if {$show_oneperline} {
+	    	    report $mod
+	        }\
+	        elseif {$show_modtimes} {
+		    set filetime [clock format [file mtime [lindex\
+		      [getPathToModule $mod] 0]] -format "%Y/%m/%b %H:%M:%S"]
+		    report [format "%-50s%10s" $mod $filetime]
+	        } else {
+		    if {$len > $max} {
+		        set max $len
+		    }
+		    # skip zero length module names
+		    # call getPathToModule to find and execute .version and\
+		      .modulerc files for this module
+		    getPathToModule $mod
+		    set tag_list [getVersAliasList $mod]
+
+		    if {[llength $tag_list]} {
+			append mod "(" [join $tag_list $separator] ")"
+			# expand string length to include version alises
+			set len [string length $mod]
+			if {$len > $max} {
+			    set max $len
+			}
+		    }
+
+		    lappend list $mod
+                }
+	    }
+	}
+	if {$show_oneperline ==0 && $show_modtimes == 0} {
+	    # save room for numbers and spacing: 2 digits + ) + space + space
+	    set cols [expr {int($DEF_COLUMNS/($max + 5))}]
+	    # safety check to prevent divide by zero error below
+	    if {$cols <= 0} {
+		set cols 1
+	    }
+
+	    set item_cnt [llength $list]
+	    set rows [expr {int($item_cnt / $cols)}]
+	    set lastrow_item_cnt [expr {int($item_cnt % $cols)}]
+	    if {$lastrow_item_cnt > 0} {
+		incr rows
+	    }
+	    if {$g_debug} {
+		report "list = $list"
+		report "rows/cols = $rows/$cols,   max = $max"
+		report "item_cnt = $item_cnt,  lastrow_item_cnt =\
+		  $lastrow_item_cnt"
+	    }
+	    for {set row 0} {$row < $rows} {incr row} {
+		for {set col 0} {$col < $cols} {incr col} {
+		    set index [expr {$col * $rows + $row}]
+		    set mod [lindex $list $index]
+
+		    if {$mod != ""} {
+			set n [expr {$index +1}]
+			set mod [format "%2d) %-${max}s " $n $mod]
+			report $mod -nonewline
+		    }
+		}
+		report ""
+	    }
+	}
+    }
+}
+
+proc cmdModuleDisplay {mod} {
+    global env tcl_version ModulesCurrentModulefile
+
+    set modfile [getPathToModule $mod]
+    if {$modfile != ""} {
+	pushModuleName [lindex $modfile 1]
+	set modfile [lindex $modfile 0]
+	report\
+	  "-------------------------------------------------------------------"
+	report "$modfile:\n"
+	pushMode "display"
+	execute-modulefile $modfile
+	popMode
+	popModuleName
+	report\
+	  "-------------------------------------------------------------------"
+    }
+}
+
+proc cmdModulePaths {mod {separator {}}} {
+    global env g_pathList flag_default_mf flag_default_dir g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModulePaths: ($mod, $separator)"
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    if {[catch {
+	foreach dir [split $env(MODULEPATH) $separator] {
+	    if {[file isdirectory $dir]} {
+		foreach mod2 [listModules $dir $mod 0 "" $flag_default_mf\
+		  $flag_default_dir] {
+		    lappend g_pathList $mod2
+		}
+	    }
+	}
+    } errMsg]} {
+	reportWarning "ERROR: module paths $mod failed. $errMsg"
+    }
+}
+
+proc cmdModulePath {mod} {
+    global env g_pathList ModulesCurrentModulefile g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModulePath: ($mod)"
+    }
+    set modfile [getPathToModule $mod]
+    if {$modfile != ""} {
+	set modfile [lindex $modfile 0]
+	set ModulesCurrentModulefile $modfile
+
+	set g_pathList $modfile
+    }
+}
+
+proc cmdModuleWhatIs {{mod {}}} {
+    cmdModuleSearch $mod {}
+}
+
+proc cmdModuleApropos {{search {}}} {
+    cmdModuleSearch {} $search
+}
+
+proc cmdModuleSearch {{mod {}} {search {}}} {
+    global env tcl_version ModulesCurrentModulefile
+    global g_whatis g_def_separator g_debug
+
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleSearch: ($mod, $search)"
+    }
+    if {$mod == ""} {
+	set mod "*"
+    }
+    foreach dir [split $env(MODULEPATH) $g_def_separator] {
+	if {[file isdirectory $dir]} {
+	    report "----------- $dir ------------- "
+	    set modlist [listModules $dir $mod 0 "" 0 0]
+	    foreach mod2 $modlist {
+		set g_whatis ""
+		set modfile [getPathToModule $mod2]
+		if {$modfile != ""} {
+		    pushMode "whatis"
+		    pushModuleName [lindex $modfile 1]
+		    set modfile [lindex $modfile 0]
+		    execute-modulefile $modfile
+		    popMode
+		    popModuleName
+		    if {$search =="" || [regexp -nocase $search $g_whatis]} {
+			report [format "%20s: %s" $mod2 $g_whatis]
+		    }
+		}
+	    }
+	}
+    }
+}
+
+proc cmdModuleSwitch {old {new {}}} {
+    global env g_debug g_loadedModulesGeneric g_loadedModules
+
+    if {$new == ""} {
+	set new $old
+    } elseif {[info exists g_loadedModules($new)]} {
+	set tmp $new
+	set new $old
+	set old $tmp
+    }
+
+    if {![info exists g_loadedModules($old)] &&
+	 [info exists g_loadedModulesGeneric($old)]} {
+	set old "$old/$g_loadedModulesGeneric($old)"
+    }
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleSwitch: new=\"$new\" old=\"$old\""
+    }
+
+    cmdModuleUnload $old
+    cmdModuleLoad $new
+}
+
+proc cmdModuleSource {args} {
+    global env tcl_version g_loadedModules g_loadedModulesGeneric g_force g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleSource: $args"
+    }
+    foreach file $args {
+	if {[file exists $file]} {
+	    pushMode "load"
+	    pushModuleName $file
+	    execute-modulefile $file
+	    popModuleName
+	    popMode
+	} else {
+	    error "File $file does not exist"
+	}
+    }
+}
+
+proc cmdModuleLoad {args} {
+    global env g_loadedModules g_loadedModulesGeneric g_force
+    global ModulesCurrentModulefile
+    global g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleLoad: loading $args"
+    }
+
+    foreach mod $args {
+	set modfile [getPathToModule $mod]
+	if {$modfile != ""} {
+	    set currentModule [lindex $modfile 1]
+	    set modfile [lindex $modfile 0]
+	    set ModulesCurrentModulefile $modfile
+
+	    if {$g_force || ! [info exists g_loadedModules($currentModule)]} {
+		pushMode "load"
+		pushModuleName $currentModule
+
+		saveSettings
+		if {[execute-modulefile $modfile]} {
+		    restoreSettings
+		} else {
+		    append-path LOADEDMODULES $currentModule
+		    append-path _LMFILES_ $modfile
+		    set g_loadedModules($currentModule) 1
+		    set genericModName [file dirname $mod]
+
+		    if {![info exists\
+		      g_loadedModulesGeneric($genericModName)]} {
+			set g_loadedModulesGeneric($genericModName) [file tail\
+			  $currentModule]
+		    }
+		}
+
+		popMode
+		popModuleName
+	    }
+	}
+    }
+}
+
+proc cmdModuleUnload {args} {
+    global tcl_version g_loadedModules g_loadedModulesGeneric
+    global ModulesCurrentModulefile g_debug g_def_separator
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleUnload: unloading $args"
+    }
+
+    foreach mod $args {
+	if {[catch {
+	    set modfile [getPathToModule $mod]
+	    if {$modfile != ""} {
+		set currentModule [lindex $modfile 1]
+		set modfile [lindex $modfile 0]
+		set ModulesCurrentModulefile $modfile
+
+		if {[info exists g_loadedModules($currentModule)]} {
+		    pushMode "unload"
+		    pushModuleName $currentModule
+		    saveSettings
+		    if {[execute-modulefile $modfile]} {
+			restoreSettings
+		    } else {
+			unload-path LOADEDMODULES $currentModule $g_def_separator
+			unload-path _LMFILES_ $modfile $g_def_separator
+			unset g_loadedModules($currentModule)
+			if {[info exists g_loadedModulesGeneric([file dirname\
+			  $currentModule])]} {
+			    unset g_loadedModulesGeneric([file dirname\
+			      $currentModule])
+			}
+		    }
+
+		    popMode
+		    popModuleName
+		}
+	    } else {
+		if {[info exists g_loadedModulesGeneric($mod)]} {
+		    set mod "$mod/$g_loadedModulesGeneric($mod)"
+		}
+		unload-path LOADEDMODULES $mod $g_def_separator
+		unload-path _LMFILES_ $modfile $g_def_separator
+		if {[info exists g_loadedModules($mod)]} {
+		    unset g_loadedModules($mod)
+		}
+		if {[info exists g_loadedModulesGeneric([file dirname $mod])]} {
+		    unset g_loadedModulesGeneric([file dirname $mod])
+		}
+	    }
+	} errMsg ]} {
+	    reportWarning "ERROR: module: module unload $mod failed.\n$errMsg"
+	}
+    }
+}
+
+
+proc cmdModulePurge {{separator {}}} {
+    global env g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModulePurge: $separator"
+    }
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    if {[info exists env(LOADEDMODULES)]} {
+	set list [split $env(LOADEDMODULES) $separator]
+	eval cmdModuleUnload [reverseList $list]
+    }
+}
+
+
+proc cmdModuleReload {{separator {}}} {
+    global env g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleReload: $separator"
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    if {[info exists env(LOADEDMODULES)]} {
+	set list [split $env(LOADEDMODULES) $separator]
+	set rlist [reverseList $list]
+	foreach mod $rlist {
+	    cmdModuleUnload $mod
+	}
+	foreach mod $list {
+	    cmdModuleLoad $mod
+	}
+    }
+}
+
+proc cmdModuleAliases {} {
+
+    global DEF_COLUMNS g_moduleAlias g_moduleVersion g_debug
+
+    set label "Aliases"
+    set len  [string length $label]
+    set lrep [expr {($DEF_COLUMNS - $len - 2)/2}]
+    set rrep [expr {$DEF_COLUMNS - $len - 2 - $lrep}]
+
+    report "[string repeat {-} $lrep] $label [string repeat {-} $rrep]"
+
+    foreach name [lsort -dictionary [array names g_moduleAlias]] {
+       report "$name -> $g_moduleAlias($name)"
+    }
+
+    set label "Versions"
+    set len  [string length $label]
+    set lrep [expr {($DEF_COLUMNS - $len - 2)/2}]
+    set rrep [expr {$DEF_COLUMNS - $len - 2 - $lrep}]
+
+    report "[string repeat {-} $lrep] $label [string repeat {-} $rrep]"
+
+    foreach name [lsort -dictionary [array names g_moduleVersion]] {
+        report "$name -> $g_moduleVersion($name)"
+    }
+}
+
+proc system {mycmd args} {
+    global g_systemList g_debug
+
+    if {$g_debug} {
+	report "DEBUG system: $mycmd $args"
+    }
+    set mode [currentMode]
+    set mycmd [join [concat $mycmd $args] " "]
+
+    if {$mode == "load"} {
+	lappend g_systemList $mycmd
+    }\
+    elseif {$mode == "unload"} {
+	# No operation here unable to undo a syscall.
+    }\
+    elseif {$mode == "display"} {
+	report "system\t\t$mycmd"
+    }
+    return {}
+}
+
+proc cmdModuleAvail {{mod {*}}} {
+    global env ignoreDir DEF_COLUMNS flag_default_mf flag_default_dir
+    global show_oneperline show_modtimes g_def_separator
+
+    if {$show_modtimes} {
+	report "- Package -----------------------------.- Versions -.- Last\
+	  mod. ------"
+    }
+
+    foreach dir [split $env(MODULEPATH) $g_def_separator] {
+	if {[file isdirectory "$dir"] && [file readable $dir]} {
+	    set len  [string length $dir]
+	    set lrep [expr {($DEF_COLUMNS - $len - 2)/2}]
+	    set rrep [expr {$DEF_COLUMNS - $len - 2 - $lrep}]
+	    report "[string repeat {-} $lrep] $dir [string repeat {-} $rrep]"
+	    set list [listModules "$dir" "$mod" 0 "" $flag_default_mf\
+	      $flag_default_dir]
+            # sort names (sometimes? returned in the order as they were
+            # created on disk :-)
+            set list [lsort $list]
+	    if {$show_modtimes} {
+		foreach i $list {
+                    # don't change $i with the regsub - we need it 
+                    # to figure out the file time.
+                    regsub {\(default\)} $i "   (default)" i2 
+		    set filetime [clock format [file mtime [lindex [getPathToModule $i] 0]] -format "%Y/%m/%b %H:%M:%S" ]
+		    report [format "%-53s%10s" $i2 $filetime]
+		}
+	    }\
+	    elseif {$show_oneperline} {
+		foreach i $list {
+                    regsub {\(default\)} $i "   (default)" i2 
+		    report "$i2"
+		}
+	    } else {
+		set max 0
+		foreach mod2 $list {
+		    if {[string length $mod2] > $max} {
+			set max [string length $mod2]
+		    }
+		}
+		incr max 1
+		set cols [expr {int($DEF_COLUMNS / $max)}]
+		# safety check to prevent divide by zero error below
+		if {$cols <= 0} {
+		    set cols 1
+		}
+
+		# There is no '{}' at the begining of this 'list' as there is\
+		  in cmd 
+		#               ModuleList - ?
+		set item_cnt [expr {[llength $list] - 0}]
+		set rows [expr {int($item_cnt / $cols)}]
+		set lastrow_item_cnt [expr {int($item_cnt % $cols)}]
+		if {$lastrow_item_cnt > 0} {
