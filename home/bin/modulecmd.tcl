@@ -1166,3 +1166,719 @@ proc currentModuleName {} {
 }
 
 proc pushModuleName {moduleName} {
+    global g_moduleNameStack
+
+    lappend g_moduleNameStack $moduleName
+}
+
+proc popModuleName {} {
+    global g_moduleNameStack
+
+    set len [llength $g_moduleNameStack]
+    set len [expr {$len - 2}]
+    set g_moduleNameStack [lrange $g_moduleNameStack 0 $len]
+}
+
+
+# Return the full pathname and modulename to the module.  
+# Resolve aliases and default versions if the module name is something like
+# "name/version" or just "name" (find default version).
+proc getPathToModule {mod {separator {}}} {
+    global env g_loadedModulesGeneric
+    global g_moduleAlias g_moduleVersion
+    global g_debug g_def_separator
+    global ModulesCurrentModulefile flag_default_mf flag_default_dir
+
+    set retlist ""
+
+    if {$mod == ""} {
+	return ""
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    if {$g_debug} {
+	report "DEBUG getPathToModule: Finding $mod"
+    }
+
+    # Check for aliases
+# This is already done at the root level so why do it again?
+#    set newmod [resolveModuleVersionOrAlias $mod]
+#    if {$newmod != $mod} {
+#	# Alias before ModulesVersion
+#	return [getPathToModule $newmod]
+#    }
+
+    # Check for $mod specified as a full pathname
+    if {[string match {/*} $mod]} {
+	if {[file exists $mod]} {
+	    if {[file readable $mod]} {
+		if {[file isfile $mod]} {
+		    # note that a raw filename as an argument returns the full\
+		      path as the module name
+		    if {[checkValidModule $mod]} {
+			return [list $mod $mod]
+		    } else {
+			report "+(0):ERROR:0: Unable to locate a modulefile\
+			  for '$mod'"
+			return ""
+		    }
+		}
+	    }
+	}
+    }\
+    elseif {[info exists env(MODULEPATH)]} {
+	# Now search for $mod in MODULEPATH
+	foreach dir [split $env(MODULEPATH) $separator] {
+	    set path "$dir/$mod"
+
+	    # modparent is the the modulename minus the module version.  
+	    set modparent [file dirname $mod]
+	    set modversion [file tail $mod]
+	    # If $mod was specified without a version (no "/") then mod is\
+	      really modparent
+	    if {$modparent == "."} {
+		set modparent $mod
+	    }
+	    set modparentpath "$dir/$modparent"
+
+
+	    # Search the modparent directory for .modulerc files in case we\
+	      need to translate an alias
+	    if {[file isdirectory $modparentpath]} {
+		# Execute any modulerc for this module
+		if {[file exists "$modparentpath/.modulerc"]} {
+		    if {$g_debug} {
+			report "DEBUG getPathToModule: Found\
+			  $modparentpath/.modulerc"
+		    }
+		    execute-modulerc $modparentpath/.modulerc
+		}
+		# Check for an alias
+		set newmod [resolveModuleVersionOrAlias $mod]
+		if {$newmod != $mod} {
+		    # Alias before ModulesVersion
+		    return [getPathToModule $newmod]
+		}
+	    }
+
+	    # Now check if the mod specified is a file or a directory
+	    if {[file readable $path]} {
+		# If a directory, return the default if a .version file is
+		# present or return the last file within the dir
+		if {[file isdirectory $path]} {
+		    set ModulesVersion ""
+		    # Not an alias or version alias - check for a .version\
+		      file or find the default file
+		    if {[info exists g_loadedModulesGeneric($mod)]} {
+			set ModulesVersion $g_loadedModulesGeneric($mod)
+		    }\
+		    elseif {[file exists "$path/.version"] && ![file readable\
+		      "$path/.modulerc"]} {
+			# .version files aren't read if .modulerc present
+			if {$g_debug} {
+			    report "DEBUG getPathToModule: Found $path/.version"
+			}
+			set ModulesVersion [execute-modulerc "$path/.version"]
+		    }
+
+
+		    # Try for the last file in directory if no luck so far
+		    if {$ModulesVersion == ""} {
+			set modlist [listModules $path "" 0 "-dictionary" 0 0]
+			set ModulesVersion [lindex $modlist end]
+			if {$g_debug} {
+			    report "DEBUG getPathToModule: Found\
+			      $ModulesVersion in $path"
+			}
+		    }
+
+
+		    if {$ModulesVersion != ""} {
+			# The path to the module file
+			set verspath "$path/$ModulesVersion"
+			# The modulename (name + version)
+			set versmod "$mod/$ModulesVersion"
+			set retlist [list $verspath $versmod]
+		    }
+		} else {
+		    # If mod was a file in this path, try and return that file
+		    set retlist [list $path $mod]
+		}
+
+		# We may have a winner, check validity of result
+		if {[llength $retlist] == 2} {
+		    # Check to see if we've found only a directory.  If so,\
+		      keep looking
+		    if {[file isdirectory [lindex $retlist 0]]} {
+			set retlist [getPathToModule [lindex $retlist 1]]
+		    }
+
+		    if {! [checkValidModule [lindex $retlist 0]]} {
+			set path [lindex $retlist 0]
+		    } else {
+			return $retlist
+		    }
+		}
+	    }
+	    # File wasn't readable, go to next path
+	}
+	# End of of foreach loop
+	report "+(0):ERROR:0: Unable to locate a modulefile for '$mod'"
+	return ""
+    } else {
+	error "\$MODULEPATH not defined"
+	return ""
+    }
+}
+
+proc runModulerc {} {
+    # Runs the global RC files if they exist
+    global env g_debug
+
+    if {$g_debug} {
+	report "DEBUG runModulerc: running..."
+	report "DEBUG runModulerc: env MODULESHOME = $env(MODULESHOME)"
+	report "DEBUG runModulerc: env HOME = $env(HOME)"
+    }
+    if {[info exists env(MODULERCFILE)]} {
+	if {[file readable $env(MODULERCFILE)]} {
+	    if {$g_debug} {
+		report "DEBUG runModulerc: Executing $env(MODULERCFILE)"
+	    }
+	    cmdModuleSource $env(MODULERCFILE)
+	}
+    }
+    if {[info exists env(MODULESHOME)]} {
+	if {[file readable "$env(MODULESHOME)/etc/rc"]} {
+	    if {$g_debug} {
+		report "DEBUG runModulerc: Executing $env(MODULESHOME)/etc/rc"
+	    }
+	    cmdModuleSource "$env(MODULESHOME)/etc/rc"
+	}
+    }
+    if {[info exists env(HOME)]} {
+	if {[file readable "$env(HOME)/.modulerc"]} {
+	    if {$g_debug} {
+		report "DEBUG runModulerc: Executing $env(HOME)/.modulerc"
+	    }
+	    cmdModuleSource "$env(HOME)/.modulerc"
+	}
+    }
+}
+
+proc saveSettings {} {
+    foreach var {env g_Aliases g_stateEnvVars g_stateAliases g_newXResource\
+      g_delXResource} {
+	eval "global g_SAVE_$var $var"
+	eval "array set g_SAVE_$var \[array get $var\]"
+    }
+}
+
+proc restoreSettings {} {
+    foreach var {env g_Aliases g_stateEnvVars g_stateAliases g_newXResource\
+      g_delXResource} {
+	eval "global g_SAVE_$var $var"
+	eval "array set $var \[array get g_SAVE_$var\]"
+    }
+}
+
+proc renderSettings {} {
+    global env g_Aliases g_shellType g_shell
+    global g_stateEnvVars g_stateAliases
+    global g_newXResources g_delXResources
+    global g_pathList g_systemList error_count
+    global g_autoInit CSH_LIMIT g_debug
+
+    if {$g_debug} {
+       report "DEBUG renderSettings: called."
+    }
+
+    set iattempt 0
+
+    # required to work on cygwin, shouldn't hurt real linux
+    fconfigure stdout -translation lf
+
+	# preliminaries
+
+	switch -- $g_shellType {
+	python {
+		puts stdout "import os"
+	    }
+	}
+
+	if {$g_autoInit} {
+	    global argv0
+
+            # automatically detect which tclsh should be used for future module commands
+            set tclshbin [info nameofexecutable]
+
+	    # add cwd if not absolute script path
+	    if {! [regexp {^/} $argv0]} {
+		set pwd [exec pwd]
+		set argv0 "$pwd/$argv0"
+	    }
+
+	    set env(MODULESHOME) [file dirname $argv0]
+	    set g_stateEnvVars(MODULESHOME) "new"
+
+	    switch -- $g_shellType {
+	    csh {
+		    puts stdout "if ( \$?histchars ) then"
+		    puts stdout "  set _histchars = \$histchars"
+		    puts stdout "  if (\$?prompt) then"
+		    puts stdout "    alias module 'unset histchars;set\
+		      _prompt=\"\$prompt\";eval `'$tclshbin' '$argv0' '$g_shell' \\!*`;set\
+		      histchars = \$_histchars; set prompt=\"\$_prompt\";unset\
+		      _prompt'"
+		    puts stdout "  else"
+		    puts stdout "    alias module 'unset histchars;eval `'$tclshbin' '$argv0'\
+		      '$g_shell' \\!*`;set histchars = \$_histchars'"
+		    puts stdout "  endif"
+		    puts stdout "else"
+		    puts stdout "  if (\$?prompt) then"
+		    puts stdout "    alias module 'set _prompt=\"\$prompt\";set\
+		      prompt=\"\";eval `'$tclshbin' '$argv0' '$g_shell' \\!*`;set\
+		      prompt=\"\$_prompt\";unset _prompt'"
+		    puts stdout "  else"
+		    puts stdout "    alias module 'eval `'$tclshbin' '$argv0' '$g_shell' \\!*`'"
+		    puts stdout "  endif"
+		    puts stdout "endif"
+		}
+	    sh {
+		    puts stdout "module () { eval `'$tclshbin' '$argv0' '$g_shell' \$*`; } ;"
+		}
+	    cmd {
+	            puts stdout "start /b \%MODULESHOME\%/init/module.cmd %*"
+	        }
+	    perl {
+		    puts stdout "sub module {"
+		    puts stdout "  eval `$tclshbin \$ENV{\'MODULESHOME\'}/modulecmd.tcl perl @_`;"
+		    puts stdout "  if(\$@) {"
+		    puts stdout "    use Carp;"
+		    puts stdout "    confess \"module-error: \$@\n\";"
+		    puts stdout "  }"
+		    puts stdout "  return 1;"
+		    puts stdout "}"
+		}
+	    python {
+		    puts stdout "import subprocess"
+		    puts stdout "def module(command, *arguments):"
+		    puts stdout "        exec subprocess.Popen(\['$tclshbin', '$argv0', 'python', command\] \
+                       list(arguments), stdout=subprcess.PIPE).communicate()\[0\]"
+		}
+	    lisp {
+		    error "ERROR: XXX lisp mode autoinit not yet implemented"
+		}
+	    }
+
+	    if {[file exists "$env(MODULESHOME)/modulerc"]} {
+		cmdModuleSource "$env(MODULESHOME)/modulerc"
+	    }
+	    if {[file exists "$env(MODULESHOME)/init/modulerc"]} {
+		cmdModuleSource "$env(MODULESHOME)/init/modulerc"
+	    }
+	}
+
+
+	# new environment variables
+	foreach var [array names g_stateEnvVars] {
+	    if {$g_stateEnvVars($var) == "new"} {
+		switch -- $g_shellType {
+		csh {
+			set val [multiEscaped $env($var)]
+			# csh barfs on long env vars
+			if {$g_shell == "csh" && [string length $val] >\
+			  $CSH_LIMIT} {
+			    if {$var == "PATH"} {
+				reportWarning "WARNING: module: PATH exceeds\
+				  $CSH_LIMIT characters, truncating and\
+				  appending /usr/bin:/bin ..."
+				set val [string range $val 0 [expr {$CSH_LIMIT\
+				  - 1}]]:/usr/bin:/bin
+			    } else {
+				reportWarning "WARNING: module: $var exceeds\
+				  $CSH_LIMIT characters, truncating..."
+				set val [string range $val 0 [expr {$CSH_LIMIT\
+				  - 1}]]
+			    }
+			}
+			puts stdout "setenv $var $val;"
+		    }
+		sh {
+			puts stdout "$var=[multiEscaped $env($var)]; export $var;"
+		    }
+		perl {
+			set val [doubleQuoteEscaped $env($var)]
+			set val [atSymbolEscaped $env($var)]
+			puts stdout "\$ENV{\'$var\'} = \'$val\';"
+		    }
+		python {
+			set val [singleQuoteEscaped $env($var)]
+			puts stdout "os.environ\['$var'\] = '$val'"
+		    }
+		lisp {
+			set val [doubleQuoteEscaped $env($var)]
+			puts stdout "(setenv \"$var\" \"$val\")"
+		    }
+	        cmd {
+	                set val $env($var)
+	                puts stdout "set $var=$val"
+	            }
+		}
+	    } elseif {$g_stateEnvVars($var) == "del"} {
+		switch -- $g_shellType {
+		csh {
+			puts stdout "unsetenv $var;"
+		    }
+		sh {
+			puts stdout "unset $var;"
+		    }
+	        cmd {
+	                puts stdout "set $var="
+	             }
+		perl {
+			puts stdout "delete \$ENV{\'$var\'};"
+		    }
+		python {
+			puts stdout "os.environ\['$var'\] = ''"
+			puts stdout "del os.environ\['$var'\]"
+		    }
+		lisp {
+			puts stdout "(setenv \"$var\" nil)"
+		    }
+		}
+	    }
+	}
+
+        foreach var [array names g_stateAliases] {
+           if {$g_stateAliases($var) == "new"} {
+              switch -- $g_shellType {
+                 csh {
+                    # set val [multiEscaped $g_Aliases($var)]
+                    set val $g_Aliases($var)
+                    # Convert $n -> \!\!:n
+                    regsub -all {\$([0-9]+)} $val {\\!\\!:\1} val
+                    # Convert $* -> \!*
+                    regsub -all {\$\*} $val {\\!*} val
+                    puts stdout "alias $var '$val';"
+                 }
+                 sh {
+                    set val $g_Aliases($var)
+                    puts stdout "alias $var=\'$val\';"
+                 }
+              }
+           } elseif {$g_stateAliases($var) == "del"} {
+              switch -- $g_shellType {
+                 csh {
+                    puts stdout "unalias $var;"
+                 }
+                 sh {
+                    puts stdout "unalias $var;"
+                 }
+              }
+	   }
+        }
+
+	# new x resources
+	if {[array size g_newXResources] > 0} {
+	    set xrdb [findExecutable "xrdb"]
+	    foreach var [array names g_newXResources] {
+		set val $g_newXResources($var)
+		if {$val == ""} {
+		    switch -regexp -- $g_shellType {
+		    {^(csh|sh)$} {
+			    if {[file exists $var]} {
+				puts stdout "$xrdb -merge $var;"
+			    } else {
+				puts stdout "$xrdb -merge <<EOF"
+				puts stdout "$var"
+				puts stdout "EOF;"
+			    }
+			}
+		    perl {
+			    if {[file isfile $var]} {
+				puts stdout "system(\"$xrdb -merge $var\");"
+			    } else {
+				puts stdout "open(XRDB,\"|$xrdb -merge\");"
+				set var [doubleQuoteEscaped $var]
+				puts stdout "print XRDB \"$var\\n\";"
+				puts stdout "close XRDB;"
+			    }
+			}
+		    python {
+			    if {[file isfile $var]} {
+				puts stdout "os.popen('$xrdb -merge $var');"
+			    } else {
+				set var [singleQuoteEscaped $var]
+				puts stdout "os.popen('$xrdb -merge').write('$var')"
+			    }
+			}
+		    lisp {
+			    if {[file exists $var]} {
+				puts stdout "(shell-command-to-string \"$xrdb\
+				  -merge $var\")"
+			    } else {
+				puts stdout "(shell-command-to-string \"echo $var\
+				  | $xrdb -merge\")"
+			    }
+			}
+		    }
+		} else {
+		    switch -regexp -- $g_shellType {
+		    {^(csh|sh)$} {
+			    puts stdout "$xrdb -merge <<EOF"
+			    puts stdout "$var: $val"
+			    puts stdout "EOF;"
+			}
+		    perl {
+			    puts stdout "open(XRDB,\"|$xrdb -merge\");"
+			    set var [doubleQuoteEscaped $var]
+			    set val [doubleQuoteEscaped $val]
+			    puts stdout "print XRDB \"$var: $val\\n\";"
+			    puts stdout "close XRDB;"
+			}
+		    python {
+			    set var [singleQuoteEscaped $var]
+			    set val [singleQuoteEscaped $val]
+			    puts stdout "os.popen('$xrdb\
+			      -merge').write('$var: $val')"
+			}
+		    lisp {
+			    puts stdout "(shell-command-to-string \"echo $var:\
+			      $val | $xrdb -merge\")"
+			}
+		    }
+		}
+	    }
+	}
+
+	if {[array size g_delXResources] > 0} {
+	    set xrdb [findExecutable "xrdb"]
+	    foreach var [array names g_delXResources] {
+		if {$val == ""} {
+		    # do nothing
+		} else {
+		    puts stdout "xrdb -remove <<EOF"
+		    puts stdout "$var:"
+		    puts stdout "EOF;"
+		}
+	    }
+	}
+
+	if {[info exists g_systemList]} {
+	    foreach var $g_systemList {
+		puts stdout "$var;"
+	    }
+	}
+
+	# module path{s,} output
+	if {[info exists g_pathList]} {
+	    foreach var $g_pathList {
+		switch -- $g_shellType {
+		csh {
+			puts stdout "echo '$var';"
+		    }
+		sh {
+			puts stdout "echo '$var';"
+		    }
+		cmd {
+			puts stdout "echo '$var'"
+		    }
+		perl {
+			puts stdout "print '$var'.\"\\n\";"
+		    }
+		python {
+			puts stdout "print '$var'"
+		    }
+		lisp {
+			puts stdout "(message \"$var\")"
+		    }
+		}
+	    }
+	}
+
+	set nop 0
+	if {$error_count == 0 && ! [tell stdout]} {
+	    set nop 1
+	}
+
+	if {$error_count > 0} {
+	    reportWarning "ERROR: $error_count error(s) detected."
+	    switch -- $g_shellType {
+	    csh {
+		    puts stdout "/bin/false;"
+		}
+	    sh {
+		    puts stdout "/bin/false;"
+		}
+	    cmd {
+	            # nothing needed, reserve for future cygwin, MKS, etc
+	        }
+	    perl {
+		    puts stdout "die \"modulefile.tcl: $error_count error(s)\
+		      detected!\\n\""
+		}
+	    python {
+		    puts stdout "raise RuntimeError, 'modulefile.tcl: $error_count error(s) detected!'"
+		}
+	    lisp {
+		    puts stdout "(error \"modulefile.tcl: $error_count error(s)\
+		      detected!\")"
+		}
+	    }
+	    set nop 0
+	} else {
+	    switch -- $g_shellType {
+	    perl {
+		    puts stdout "1;"
+		}
+	    }
+	}
+
+
+	if {$nop} {
+	    #	    nothing written!
+	    switch -- $g_shellType {
+	    csh {
+		    puts "/bin/true;"
+		}
+	    sh {
+		    puts "/bin/true;"
+		}
+	    cmd {
+	            # nothing needed, reserve for future cygwin, MKS, etc
+	        }
+	    perl {
+		    puts "1;"
+		}
+	    python {
+		    # this is not correct
+		    puts ""
+		}
+	    lisp {
+		    puts "t"
+		}
+	    }
+	} else {
+	}
+}
+
+proc cacheCurrentModules {{separator {}}} {
+    global g_loadedModules g_loadedModulesGeneric env g_def_separator g_debug
+
+
+    if {$g_debug} {
+	report "DEBUG cacheCurrentModules: ($separator)"
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    # mark specific as well as generic modules as loaded
+    if {[info exists env(LOADEDMODULES)]} {
+	foreach mod [split $env(LOADEDMODULES) $separator] {
+	    set g_loadedModules($mod) 1
+	    set g_loadedModulesGeneric([file dirname $mod]) [file tail $mod]
+	}
+    }
+}
+
+# This proc resolves module aliases or version aliases to the real module name\
+  and version
+proc resolveModuleVersionOrAlias {names} {
+    global g_moduleVersion g_moduleDefault g_moduleAlias g_debug
+
+    if {$g_debug} {
+	report "DEBUG resolveModuleVersionOrAlias: Resolving $names"
+    }
+    set ret_list {}
+
+    foreach name $names {
+	# Chop off (default) if it exists
+	set x [expr {[string length $name] - 9}]
+	if {($x > 0) &&([string range $name $x end] == "\(default\)")} {
+	    set name [string range $name 0 [expr {$x -1}]]
+	    if {$g_debug} {
+		report "DEBUG resolveModuleVersionOrAlias: trimming name =\
+		  \"$name\""
+	    }
+	}
+	if {[info exists g_moduleAlias($name)]} {
+	    # if the alias is another alias, we need to resolve it
+	    if {$g_debug} {
+		report "DEBUG resolveModuleVersionOrAlias: $name is an alias"
+	    }
+	    set ret_list [linsert $ret_list end\
+	      [resolveModuleVersionOrAlias $g_moduleAlias($name)]]
+	}\
+	elseif {[info exists g_moduleVersion($name)]} {
+	    # if the pseudo version is an alias, we need to resolve it
+	    if {$g_debug} {
+		report "DEBUG resolveModuleVersionOrAlias: $name is a version\
+		  alias"
+	    }
+	    set ret_list [linsert $ret_list end\
+	      [resolveModuleVersionOrAlias $g_moduleVersion($name)]]
+	}\
+	elseif {[info exists g_moduleDefault($name)]} {
+	    # if the default is an alias, we need to resolve it
+	    if {$g_debug} {
+		report "DEBUG resolveModuleVersionOrAlias: found a default for\
+		  $name"
+	    }
+	    set ret_list [linsert $ret_list end [resolveModuleVersionOrAlias\
+	      "$name/$g_moduleDefault($name)"]]
+	} else {
+	    if {$g_debug} {
+		report "DEBUG resolveModuleVersionOrAlias: $name is nothing\
+		  special"
+	    }
+	    set ret_list [linsert $ret_list end $name]
+	}
+    }
+    if {$g_debug} {
+	report "DEBUG resolveModuleVersionOrAlias: Resolved to $ret_list"
+    }
+    return $ret_list
+}
+
+proc spaceEscaped {text} {
+    regsub -all " " $text "\\ " regsub_tmpstrg
+    return $regsub_tmpstrg
+}
+
+proc multiEscaped {text} {
+    regsub -all {([ \\\t\{\}|<>!;#^$&*"'`()])} $text {\\\1} regsub_tmpstrg
+    return $regsub_tmpstrg
+}
+
+proc doubleQuoteEscaped {text} {
+    regsub -all "\"" $text "\\\"" regsub_tmpstrg
+    return $regsub_tmpstrg
+}
+
+proc atSymbolEscaped {text} {
+    regsub -all "@" $text "\\@" regsub_tmpstrg
+    return $regsub_tmpstrg
+}
+
+proc singleQuoteEscaped {text} {
+    regsub -all "\'" $text "\\\'" regsub_tmpstrg
+    return $regsub_tmpstrg
+}
+
+proc findExecutable {cmd} {
+    foreach dir {/usr/X11R6/bin /usr/openwin/bin /usr/bin/X11} {
+	if {[file executable "$dir/$cmd"]} {
+	    return "$dir/$cmd"
+	}
+    }
+    return $cmd
+}
+
+proc reverseList {list} {
+    set newlist {}
