@@ -1,0 +1,8 @@
+#!/bin/zsh -e
+sudo systemctl start readonly-root
+pid=$(systemctl show readonly-root --property ExecMainPID | grep -Po '\d+')
+if [[ -n $TMUX && ( -d "$d$PWD" || $PWD =~ /tmp/* ) ]]; then
+  (sleep 0.2; tmux send "cd ${(q)PWD}" Enter) &
+fi
+(($#)) || set -- su $USER
+sudo HOST=read-only-rootfs-with-shares HOME=$HOME nsenter -t $pid -m "$@"

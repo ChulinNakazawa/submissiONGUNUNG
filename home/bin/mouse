@@ -19,4 +19,18 @@ f() {
   device=$(sudo systool -b usb -A product | awk -vIGNORECASE=1 -F"\n" -vRS="\n\n" '$2~/usb.*key.oard/{split($1,a,"\"");print a[2]}')
   if [[ -n $device ]]; then
     echo echo "$1" '>' /sys/bus/usb/devices/$device/power/control
-    echo "$1" > /sys/bus/usb/devices/$device/powe
+    echo "$1" > /sys/bus/usb/devices/$device/power/control
+  else
+    echo echo "$1" '>' /sys/bus/usb/devices/3-1/power/control
+    echo "$1" > /sys/bus/usb/devices/3-1/power/control
+  fi
+}
+
+case "$1" in
+  0|auto)
+    f auto
+    ;;
+  1|on)
+    f on
+    ;;
+esac

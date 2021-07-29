@@ -1,0 +1,8 @@
+
+#!/bin/bash
+tmpdir=/tmp/.notmuch
+rm -rf $tmpdir/{cur,new}
+mkdir -p $tmpdir/{cur,new,tmp}
+echo 'notmuch search terms:'
+read
+notmuch search --output=files "$REPLY" . | awk 'NR<=50;NR==50{system("notify-send -i ~/Icons/gmail.png Mail \"Too many results\"")}' | xargs -r ln -sft $tmpdir/cur
