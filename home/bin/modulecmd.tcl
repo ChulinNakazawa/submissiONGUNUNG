@@ -2609,3 +2609,558 @@ proc cmdModuleAvail {{mod {*}}} {
 		set rows [expr {int($item_cnt / $cols)}]
 		set lastrow_item_cnt [expr {int($item_cnt % $cols)}]
 		if {$lastrow_item_cnt > 0} {
+		    incr rows
+		}
+		for {set row 0} {$row < $rows} {incr row} {
+		    for {set col 0} {$col < $cols} {incr col} {
+			set index [expr {$col * $rows + $row}]
+			set mod2 [lindex $list $index]
+			if {$mod2 != ""} {
+			    set mod2 [format "%-${max}s" $mod2]
+			    report $mod2 -nonewline
+			}
+		    }
+		    report ""
+		}
+	    }
+	}
+    }
+}
+
+proc cmdModuleUse {args} {
+	global env g_debug g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleUse: $args"
+    }
+
+    if {$args == ""} {
+	showModulePath
+    } else {
+	set stuff_path "prepend"
+	foreach path $args {
+	    if {$path == ""} {
+		# Skip "holes"
+	    }\
+	    elseif {($path == "--append") ||($path == "-a") ||($path ==\
+	      "-append")} {
+		set stuff_path "append"
+	    }\
+	    elseif {($path == "--prepend") ||($path == "-p") ||($path ==\
+	      "-prepend")} {
+		set stuff_path "prepend"
+	    }\
+	    elseif {[file isdirectory $path]} {
+		if {$g_debug} {
+			report "DEBUG cmdModuleUse: calling add-path \
+				MODULEPATH $path $stuff_path $g_def_separator"
+		}
+
+		pushMode "load"
+		catch {
+			add-path MODULEPATH $path $stuff_path $g_def_separator
+		}
+		popMode
+	    } else {
+		report "+(0):WARN:0: Directory '$path' not found"
+	    }
+	}
+    }
+}
+
+proc cmdModuleUnuse {args} {
+    global g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleUnuse: $args"
+    }
+    if {$args == ""} {
+	showModulePath
+    } else {
+	global env
+	foreach path $args {
+	    regsub -all {\/} $path {\/} escpath
+	    set regexp [subst {(^|\:)${escpath}(\:|$)}]
+	    if {[info exists env(MODULEPATH)] && [regexp $regexp\
+	      $env(MODULEPATH)]} {
+
+		set oldMODULEPATH $env(MODULEPATH)
+
+		if {$g_debug} {
+			report "calling unload-path MODULEPATH $path $g_def_separator"
+		}
+
+		pushMode "unload"
+		catch {
+		    unload-path MODULEPATH $path $g_def_separator
+		}
+		popMode
+		if {[info exists env(MODULEPATH)] && $oldMODULEPATH ==\
+		  $env(MODULEPATH)} {
+		    reportWarning "WARNING: Did not unuse $path"
+		}
+	    }
+	}
+    }
+}
+
+proc cmdModuleDebug {{separator {}}} {
+    global env g_def_separator g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleDebug: $separator"
+    }
+
+    if {$separator == "" } {
+        set separator $g_def_separator
+    }
+
+    foreach var [array names env] {
+	array set countarr [getReferenceCountArray $var $separator]
+
+	foreach path [array names countarr] {
+	    report "$var\t$path\t$countarr($path)"
+	}
+	unset countarr
+    }
+    foreach dir [split $env(PATH) $separator] {
+	foreach file [glob -nocomplain -- "$dir/*"] {
+	    if {[file executable $file]} {
+		set exec [file tail $file]
+		lappend execcount($exec) $file
+	    }
+	}
+    }
+    foreach file [lsort -dictionary [array names execcount]] {
+	if {[llength $execcount($file)] > 1} {
+	    report "$file:\t$execcount($file)"
+	}
+    }
+}
+
+proc cmdModuleAutoinit {} {
+    global g_autoInit g_debug
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleAutoinit:"
+    }
+    set g_autoInit 1
+}
+
+proc cmdModuleInit {args} {
+
+    global g_shell env g_debug
+    set moduleinit_cmd [lindex $args 0]
+    set notdone 1
+    set notclear 1
+
+    if {$g_debug} {
+	report "DEBUG cmdModuleInit: $args"
+    }
+
+    # Define startup files for each shell
+    set files(csh) [list ".modules" ".cshrc" ".cshrc_variables" ".login"]
+    set files(tcsh) [list ".modules" ".tcshrc" ".cshrc" ".cshrc_variables"\
+      ".login"]
+    set files(sh) [list ".modules" ".bash_profile" ".bash_login" ".profile"\
+      ".bashrc"]
+    set files(bash) $files(sh)
+    set files(ksh) $files(sh)
+    set files(zsh) [list ".modules" ".zshrc" ".zshenv" ".zlogin"]
+
+    array set nargs {
+	list    0
+	add     1
+	load    1
+	prepend 1
+	rm      1
+	unload  1
+	switch  2
+	clear   0
+    }
+
+    # Process startup files for this shell
+    set current_files $files($g_shell)
+    foreach filename $current_files {
+	if {$notdone && $notclear} {
+	    set filepath $env(HOME)
+	    append filepath "/" $filename
+	    # create a new file to put the changes in
+	    set newfilepath "$filepath-NEW"
+
+	    if {$g_debug} {
+		report "DEBUG Looking at: $filepath"
+	    }
+	    if {[file readable $filepath] && [file isfile $filepath]} {
+		set fid [open $filepath r]
+
+		set temp [expr {[llength $args] -1}]
+		if {$temp != $nargs($moduleinit_cmd)} {
+		    error "'module init$moduleinit_cmd' requires exactly\
+		      $nargs($moduleinit_cmd) arg(s)."
+		    #	       cmdModuleHelp
+		    exit -1
+		}
+
+		# Only open the new file if we are not doing "initlist"
+		if {[string compare $moduleinit_cmd "list"] != 0} {
+		    set newfid [open $newfilepath w]
+		}
+
+		while {[gets $fid curline] >= 0} {
+		    # Find module load/add command in startup file 
+		    set comments {}
+		    if {$notdone && [regexp {^([ \t]*module[ \t]+(load|add)[\
+		      \t]+)(.*)} $curline match cmd subcmd modules]} {
+			regexp {([ \t]*\#.+)} $modules match comments
+			regsub {\#.+} $modules {} modules
+			# remove existing references to the named module from\
+			  the list
+			# Change the module command line to reflect the given\
+			  command
+			switch $moduleinit_cmd {
+			list {
+				report "$g_shell initialization file $filepath\
+				  loads modules: $modules"
+			    }
+			add {
+				set newmodule [lindex $args 1]
+				set modules [replaceFromList $modules $newmodule]
+				append modules " $newmodule"
+				puts $newfid "$cmd$modules$comments"
+				set notdone 0
+			    }
+			prepend {
+				set newmodule [lindex $args 1]
+				set modules [replaceFromList $modules $newmodule]
+				set modules "$newmodule $modules"
+				puts $newfid "$cmd$modules$comments"
+				set notdone 0
+			    }
+			rm {
+				set oldmodule [lindex $args 1]
+				set modules [replaceFromList $modules $oldmodule]
+				if {[llength $modules] == 0} {
+				    set modules ""
+				}
+				puts $newfid "$cmd$modules$comments"
+				set notdone 0
+			    }
+			switch {
+				set oldmodule [lindex $args 1]
+				set newmodule [lindex $args 2]
+				set modules [replaceFromList $modules\
+				  $oldmodule $newmodule]
+				puts $newfid "$cmd$modules$comments"
+				set notdone 0
+			    }
+			clear {
+				set modules ""
+				puts $newfid "$cmd$modules$comments"
+				set notclear 0
+			    }
+			default {
+				report "Command init$moduleinit_cmd not\
+				  recognized"
+			    }
+			}
+		    } else {
+			# copy the line from the old file to the new
+			if {[info exists newfid]} {
+			    puts $newfid $curline
+			}
+		    }
+		}
+		close $fid
+		if {[info exists newfid]} {
+		    close $newfid
+		    if {[catch {file copy -force $filepath $filepath-OLD}] !=\
+		      0} {
+			report "Failed to back up original $filepath...exiting"
+			exit -1
+		    }
+		    if {[catch {file copy -force $newfilepath $filepath}] !=\
+		      0} {
+			report "Failed to write $filepath...exiting"
+			exit -1
+		    }
+		}
+	    }
+	}
+    }
+}
+
+proc cmdModuleHelp {args} {
+    global done MODULES_CURRENT_VERSION
+
+    set done 0
+    foreach arg $args {
+	if {$arg != ""} {
+	    set modfile [getPathToModule $arg]
+
+	    if {$modfile != ""} {
+		pushModuleName [lindex $modfile 1]
+		set modfile [lindex $modfile 0]
+		report\
+		  "-------------------------------------------------------------------"
+		report "Module Specific Help for $modfile:\n"
+		set mode "Help"
+		execute-modulefile $modfile 1
+		popMode
+		popModuleName
+		report\
+		  "-------------------------------------------------------------------"
+	    }
+	    set done 1
+	}
+    }
+    if {$done == 0} {
+	report "Modules Release Tcl $MODULES_CURRENT_VERSION " 1
+        report {	Copyright GNU GPL v2 1991}
+	report {Usage: module [ command ]}
+
+	report {Commands:}
+	report {	list                     [switches] modulefile\
+	  [modulefile ...]}
+	report {	display  |  show                    modulefile\
+	  [modulefile ...]}
+        report {	add  |  load                        modulefile\
+	  [modulefile ...]}
+	report {	purge  |  rm  |  unload             modulefile\
+	  [modulefile ...]}
+	report {	reload                              modulefile\
+	  [modulefile ...]}
+        report {	switch  |  swap                    \
+	  [oldmodulefile] newmodulefile}
+	report {	avail                    [switches] [modulefile\
+	  [modulefile ...]]}
+        report {	aliases}
+	report {	whatis                              [modulefile\
+	  [modulefile ...]]}
+	report {	help                                [modulefile\
+	  [modulefile ...]]}
+	report {	path                                modulefile}
+	report {	paths                               modulefile}
+	report {	initlist                            modulefile}
+        report {	initadd                             modulefile}
+        report {	initrm                              modulefile}
+	report {	initclear                           modulefile}
+	report {	initprepend                         modulefile}
+	report {	use                                 dir [dir ...]}
+	report {	unuse                               dir [dir ...]}
+	report {	source                              scriptfile}
+	report {	apropos  |  keyword  | search       string}
+	report {Switches:}
+	report {	-t		terse format avail and list}
+	report {	-l		long format avail and list}
+    }
+}
+
+
+########################################################################
+# main program
+
+# needed on a gentoo system. Shouldn't hurt since it is
+# supposed to be the default behavior
+fconfigure stderr -translation auto
+
+if {$g_debug} {
+	report "CALLING $argv0 $argv"
+}
+
+# Parse options
+set opt [lindex $argv 1]
+switch -regexp -- $opt {
+    {^(-deb|--deb)} {
+
+        if {!$g_debug} {
+		report "CALLING $argv0 $argv"
+	}
+
+	set g_debug 1
+	report "DEBUG debug enabled"
+
+	set argv [replaceFromList $argv $opt]
+    }
+    {^(--help|-h)} {
+        cmdModuleHelp
+        exit 0
+    }
+    {^(-V|--ver)} {
+	report "Modules Release Tcl $MODULES_CURRENT_VERSION"
+	exit 0
+    }
+    {^--} {
+	report "+(0):ERROR:0: Unrecognized option '$opt'"
+	exit -1
+    }
+}
+
+set g_shell [lindex $argv 0]
+set command [lindex $argv 1]
+set argv [lreplace $argv 0 1]
+
+switch -regexp -- $g_shell {
+    ^(sh|bash|ksh|zsh)$ {
+	set g_shellType sh
+    }
+    ^(cmd)$ {
+        set g_shellType cmd
+    }
+    ^(csh|tcsh)$ {
+	set g_shellType csh
+    }
+    ^(perl)$ {
+	set g_shellType perl
+    }
+    ^(python)$ {
+	set g_shellType python
+    }
+    ^(lisp)$ {
+	set g_shellType lisp
+    }
+    . {
+	error " +(0):ERROR:0: Unknown shell type \'($g_shell)\'"
+    }
+}
+
+cacheCurrentModules
+
+# Find and execute any .modulerc file found in the module directories defined\
+  in env(MODULESPATH)
+runModulerc
+# Resolve any aliased module names - safe to run nonmodule arguments
+if {$g_debug} {
+    report "DEBUG Resolving $argv"
+}
+
+if {[lsearch $argv "-t"] >= 0} {
+    set show_oneperline 1
+    set argv [replaceFromList $argv "-t"]
+}
+if {[lsearch $argv "-l"] >= 0} {
+    set show_modtimes 1
+    set argv [replaceFromList $argv "-l"]
+}
+set argv [resolveModuleVersionOrAlias $argv]
+if {$g_debug} {
+    report "DEBUG Resolved $argv"
+}
+
+if {[catch {
+    switch -regexp -- $command {
+    {^av} {
+	    if {$argv != ""} {
+		foreach arg $argv {
+		    cmdModuleAvail $arg
+		}
+	    } else {
+		cmdModuleAvail
+   	        cmdModuleAliases
+	    }
+	}
+    {^al} {
+            cmdModuleAliases
+        }
+    {^li} {
+	    cmdModuleList
+	}
+    {^(di|show)} {
+	    foreach arg $argv {
+		cmdModuleDisplay $arg
+	    }
+	}
+    {^(add|lo)} {
+	    eval cmdModuleLoad $argv
+	    renderSettings
+	}
+    {^source} {
+	    eval cmdModuleSource $argv
+	    renderSettings
+	}
+    {^paths} {
+	    # HMS: We probably don't need the eval
+	    eval cmdModulePaths $argv
+	    renderSettings
+	}
+    {^path} {
+	    # HMS: We probably don't need the eval
+	    eval cmdModulePath $argv
+	    renderSettings
+	}
+    {^pu} {
+	    cmdModulePurge
+	    renderSettings
+	}
+    {^sw} {
+	    eval cmdModuleSwitch $argv
+	    renderSettings
+	}
+    {^(rm|unlo)} {
+	    eval cmdModuleUnload $argv
+	    renderSettings
+	}
+    {^use$} {
+	    eval cmdModuleUse $argv
+	    renderSettings
+	}
+    {^unuse$} {
+	    eval cmdModuleUnuse $argv
+	    renderSettings
+	}
+    {^wh} {
+	    if {$argv != ""} {
+		foreach arg $argv {
+		    cmdModuleWhatIs $arg
+		}
+	    } else {
+		cmdModuleWhatIs
+	    }
+	}
+    {^(apropos|search|keyword)$} {
+	    eval cmdModuleApropos $argv
+	}
+    {^debug$} {
+	    eval cmdModuleDebug
+	}
+    {^rel} {
+	    cmdModuleReload
+	    renderSettings
+	}
+    {^init(add|lo)$} {
+	    eval cmdModuleInit add $argv
+	}
+    {^initprepend$} {
+	    eval cmdModuleInit prepend $argv
+	}
+    {^initswitch$} {
+	    eval cmdModuleInit switch $argv
+	}
+    {^init(rm|unlo)$} {
+	    eval cmdModuleInit rm $argv
+	}
+    {^initlist$} {
+	    eval cmdModuleInit list $argv
+	}
+    {^initclear$} {
+	    eval cmdModuleInit clear $argv
+	}
+    {^autoinit$} {
+	    cmdModuleAutoinit
+	    renderSettings
+	}
+    {^($|help)} {
+	    cmdModuleHelp $argv
+	}
+    . {
+	    reportWarning "ERROR: command '$command' not recognized"
+	    cmdModuleHelp $argv
+	}
+    }
+} errMsg ]} {
+    reportWarning "ERROR: $errMsg"
+}
+
+# ;;; Local Variables: ***
+# ;;; mode:tcl ***
+# ;;; End: ***

@@ -1,0 +1,7 @@
+#!/bin/bash
+[[ $EUID -ne 0 ]] && exec sudo "$0" "$@"
+
+f() {
+  #for i in /sys/class/input/event*; do
+  #  name="$i/device/name"
+  # See http://w
