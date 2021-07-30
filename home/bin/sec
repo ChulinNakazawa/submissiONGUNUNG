@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+archive=~/Sed/sed.zip
+dir=/tmp/sed
+
+while getopts h opt; do
+  case $opt in
+    d) delete=1;;
+    h) change=1;;
+  esac
+done
+shift $[$OPTIND-1]
+
+case $1 in
+  e)
+    [[ -d $dir ]] || mkdir $dir
+    echo 'Enter encryption password'
+    while :; do
+      read -rs 'pass?Password: '
+      if [[ -f $arch

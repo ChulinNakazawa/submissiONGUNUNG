@@ -36,4 +36,8 @@ if ! mountpoint -q $d; then
     sudo mount --rbind $i $d/$i
   done
 fi
-#sudo HOST=$hostname HOME=/home/$user chroot --userspec $user: "$d" /bin/zsh -c 'export HOST=read-only; zsh #cd /tmp && tmux -L roroot a -t
+#sudo HOST=$hostname HOME=/home/$user chroot --userspec $user: "$d" /bin/zsh -c 'export HOST=read-only; zsh #cd /tmp && tmux -L roroot a -t roroot || tmux -L roroot new -s roroot'
+if [[ -n $TMUX && ( -d "$d$PWD" || $PWD =~ /tmp/* ) ]]; then
+  (sleep 0.2; tmux send "cd ${(q)PWD}" Enter) &
+fi
+sudo HOST=$hostname HOME=$HOME chroot --userspec $USER: $d /bin/zsh -i
