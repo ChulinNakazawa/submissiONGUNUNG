@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+
+use 5.010;
+#use strict;
+#no strict 'refs';
+use warnings;
+my $gg = '123';
+my($class, $signature, %typedef, %include);
+my $content = join ''
