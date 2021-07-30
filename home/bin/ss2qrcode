@@ -1,0 +1,6 @@
+#!/bin/zsh -e
+
+tmp=$(mktemp --suffix .jpg)
+trap 'rm $tmp' 0
+
+method=$(jq -r .metho
