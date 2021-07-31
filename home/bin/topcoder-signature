@@ -6,4 +6,24 @@ use 5.010;
 use warnings;
 my $gg = '123';
 my($class, $signature, %typedef, %include);
-my $content = join ''
+my $content = join '', <>;
+$class = $1 if $content =~ /Class:\s+(\S+)/;
+$signature = $1 if $content =~ /Method signature:\s+(\S[^\)]+\))/;
+die if !defined($class) || !defined($signature);
+
+$signature =~ s/vector <int>/int[]/;
+$signature =~ s/vector <double>/double[]/;
+$signature =~ s/vector <long long>/long[]/;
+$signature =~ s/vector <string>/string[]/;
+$signature =~ s/long long/long/;
+
+my %transform1 = ('long' => 'll', 'String' => 'string');
+while (my ($c,$d) = each %transform1) {
+    if ($signature =~ s/(^|(?<!\w))$c/$d/g) {
+	$typedef{'typedef long long ll;'} = 1 if $c eq 'long';
+	$include{'#include <string>'} = 1 if $c eq 'String';
+    }
+}
+
+my %transform2 = ('int' => 'vi', 'll' => 'vll', 'double' => 'vd', 'string' => 'vs');
+while (my ($c,$d)
