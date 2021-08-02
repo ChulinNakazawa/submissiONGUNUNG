@@ -26,4 +26,35 @@ while (my ($c,$d) = each %transform1) {
 }
 
 my %transform2 = ('int' => 'vi', 'll' => 'vll', 'double' => 'vd', 'string' => 'vs');
-while (my ($c,$d)
+while (my ($c,$d) = each %transform2) {
+    if ($signature =~ s/$c\[\]/$d/g) {
+	$include{'#include <vector>'} = 1;
+	$typedef{'typedef vector<int> vi;'} = 1 if $c eq 'int';
+	$typedef{'typedef vector<ll> vll;'} = 1 if $c eq 'll';
+	$typedef{'typedef vector<double> vd;'} = 1 if $c eq 'double';
+	$typedef{'typedef vector<string> vs;'} = 1 if $c eq 'string';
+    }
+}
+
+my $include = join "\n", sort(keys %include);
+my $typedef = join("\n", sort(keys %typedef));
+$typedef .= "\n" if $typedef;
+
+print "$include
+using namespace std;
+$typedef
+class $class {
+public:
+  $signature {
+    
+  }
+};
+
+#include <iostream>
+
+int main()
+{
+";
+
+$signature =~ /([\w<>]+) (\w+)\((.*)\)/;
+local(%in
