@@ -71,4 +71,20 @@ for (split /, /, $3) {
 	when ('double') { $double{$id} = 1; push @main, "cin >> $id;"; $eol = 1; }
 	when ('string') { $string{$id} = 1; push @main, "${['','cin.ignore(); ']}[$eol]getline(cin, $id);"; $eol = 0; }
 	when ('vi') { $int{'_N'} = 1; $int{'_I'} = 1; $vi{$id} = 1; push @main, "cin >> _N; while (_N--) cin >> _I, $id.push_back(_I);"; $eol = 1; }
-	when ('vll') {
+	when ('vll') {  $int{'_N'} = 1; $ll{'_L'} = 1; $vll{$id} = 1; push @main, "cin >> _N; while (_N--) cin >> _L, $id.push_back(_L);"; $eol = 1; }
+	when ('vd') { $int{'_N'} = 1; $double{'_D'} = 1; $vd{$id} = 1; push @main, "cin >> _N; while (_N--) cin >> _D, $id.push_back(_D);"; $eol = 1; }
+	when ('vs') {  $int{'_N'} = 1; $string{'_S'} = 1; $vs{$id} = 1; push @main, "cin >> _N; cin.ignore(); while (_N--) getline(cin, _S), $id.push_back(_S);"; $eol = 0; }
+    }
+}
+
+for ('int', 'll', 'double', 'string', 'vi', 'vll', 'vd', 'vs') {
+    next unless scalar %{$_};
+    say "  $_ ${[join ', ', sort(keys %{$_})]}[0];";
+}
+say("  ", join("\n  ", @main));
+
+if ($ret =~ /^v/) {
+    my $ret2;
+    given ($ret) {
+        when ('vi') { $ret2 = 'int'; }
+        when ('vll') { 
