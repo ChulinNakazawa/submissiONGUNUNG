@@ -57,4 +57,18 @@ int main()
 ";
 
 $signature =~ /([\w<>]+) (\w+)\((.*)\)/;
-local(%in
+local(%int, %ll, %double, %string, %vi, %vll, %vd, %vs);
+my $eol = 0;
+my $ret = $1;
+my $method = $2;
+my(@main, @id);
+for (split /, /, $3) {
+    my($type, $id) = split / /, $_;
+    push @id, $id;
+    given ($type) {
+	when ('int') { $int{$id} = 1; push @main, "cin >> $id;"; $eol = 1; }
+	when ('ll') { $ll{$id} = 1; push @main, "cin >> $id;"; $eol = 1; }
+	when ('double') { $double{$id} = 1; push @main, "cin >> $id;"; $eol = 1; }
+	when ('string') { $string{$id} = 1; push @main, "${['','cin.ignore(); ']}[$eol]getline(cin, $id);"; $eol = 0; }
+	when ('vi') { $int{'_N'} = 1; $int{'_I'} = 1; $vi{$id} = 1; push @main, "cin >> _N; while (_N--) cin >> _I, $id.push_back(_I);"; $eol = 1; }
+	when ('vll') {
