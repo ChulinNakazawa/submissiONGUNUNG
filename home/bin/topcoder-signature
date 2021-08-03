@@ -87,4 +87,12 @@ if ($ret =~ /^v/) {
     my $ret2;
     given ($ret) {
         when ('vi') { $ret2 = 'int'; }
-        when ('vll') { 
+        when ('vll') { $ret2 = 'll'; }
+        when ('vd') { $ret2 = 'double'; }
+        when ('vs') { $ret2 = 'string'; }
+    }
+    say "  $ret R = $class().$method(${[join ', ', @id]}[0]); cout << R.size() << endl; copy(R.begin(), R.end(), ostream_iterator<$ret2>(cout, \"\\n\"));"
+} else {
+    say "  cout << $class().$method(${[join ', ', @id]}[0]) << endl;"
+}
+say '}';
