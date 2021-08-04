@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+import pathlib, random, re, subprocess, sys, urllib.request
+from PIL import Image
+
+#WALLPAPER = 'x:'
+WALLPAPER = '/tmp/wallpaper.jpg'
+
+def main():
+    i = 0
+    source = None
+    try:
+        for filename in (pathlib.Path('~').expanduser()/'Wallpapers').iterdir():
+            filename = filename.as_posix()
+            if filename.endswith('.jpg'):
+                if random.randint(0, i) == i:
+                    source = filename
+                i += 1
+    except FileNotFoundError
