@@ -15,4 +15,23 @@ def main():
                 if random.randint(0, i) == i:
                     source = filename
                 i += 1
-    except FileNotFoundError
+    except FileNotFoundError:
+        return
+
+    LEN = 120
+    city = 'Redwood City'
+    args = ['-draw', 'text {},{} "{}"'.format(100, 220, city)]
+    #body = open('/tmp/a.html').read().splitlines()
+    body = urllib.request.urlopen('http://api.wunderground.com/auto/wui/geo/ForecastXML/index.xml?query='+city.replace(' ', '+').lower()).read().decode().splitlines()
+    i = 1
+    text = ''
+    for line in body:
+        m = re.search(r'<title>([^<]+)', line)
+        if m:
+            text = m.group(1)
+        m = re.search(r'<fcttext>([^<]+)', line)
+        if m:
+            text += ': '+m.group(1)
+            while text:
+                args.extend(['-draw', 'text {},{} "{}"'.format(100, 220+i*36, text[:LEN])])
+   
