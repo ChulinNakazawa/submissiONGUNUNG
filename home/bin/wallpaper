@@ -34,4 +34,25 @@ def main():
             text += ': '+m.group(1)
             while text:
                 args.extend(['-draw', 'text {},{} "{}"'.format(100, 220+i*36, text[:LEN])])
-   
+                i += 1
+                text = text[LEN:]
+                if not text: break
+                text = '  '+text
+
+    top, bottom = 180, 220+i*36
+    left, right = 80, 1840
+
+    img = Image.open(source).convert('RGB')
+    width, height = img.size
+    img = img.resize((1920, round(height/width*1920)))
+    luminance, cnt = 0, 0
+    for x in range(left, right):
+        for y in range(top, bottom):
+            r, g, b = img.getpixel((x, y))
+            luminance += 0.299*r + 0.587*g + 0.114*b
+            cnt += 1
+    luminance /= cnt
+
+    command = ['convert', source, '-resize', '1920x', '-pointsize', '24']
+    command += ['-font', 'Source-Code-Pro']
+    if luminan
