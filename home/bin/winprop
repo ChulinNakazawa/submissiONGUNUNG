@@ -1,0 +1,6 @@
+#! /bin/sh
+# Script to print common window properties in ManageHook format,
+# via xprop.  All xprop options may be used, although anything other
+# than -display, -id, and -name is probably a bad idea.
+#
+# Writ

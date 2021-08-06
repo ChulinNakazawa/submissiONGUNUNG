@@ -55,4 +55,21 @@ def main():
 
     command = ['convert', source, '-resize', '1920x', '-pointsize', '24']
     command += ['-font', 'Source-Code-Pro']
-    if luminan
+    if luminance > 128:
+        command += ['-fill', 'white']
+    else:
+        command += ['-fill', 'black']
+    command += ['-draw', 'fill-opacity 0.8 roundrectangle {},{} {},{} 10,10'.format(left, top, right, bottom)]
+    if luminance > 128:
+        command += ['-fill', 'black']
+    else:
+        command += ['-fill', 'white']
+    command += args
+    command += [WALLPAPER]
+
+    print(luminance)
+    subprocess.run(command)
+    if len(sys.argv) > 1:
+        subprocess.run(['feh', '--bg-scale', WALLPAPER])
+
+main()
